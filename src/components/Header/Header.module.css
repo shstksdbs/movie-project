@@ -1,0 +1,53 @@
+/* src/components/Header/Header.module.css */
+
+.header {
+  background: var(--color-bg);
+  padding: 1.5rem 0;  /* 위아래 높이는 기존 그대로 유지하세요 */
+}
+
+.inner {
+  /* 1) 전체 폭 100% 중에서… */
+  width: 100%;
+
+  /* 2) 최대 콘텐츠 너비는 1780px (=1920−30×2) */
+  max-width: 1860px;
+
+  /* 3) 양쪽 70px씩 고정 패딩 */
+  padding: 0 30px;
+
+  /* 4) 중앙 정렬 */
+  margin: 0 auto;
+
+  /* 기존 flex 배치는 그대로 */
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 1.5rem;  /* 필요하다면 크기 조절 */
+}
+
+.nav {
+  margin-left: auto;
+}
+
+.link {
+  color: var(--color-text);
+  font-size: 1rem;
+  padding: 0 1rem;
+}
+.link:hover {
+  color: var(--color-primary);
+}
+
+/* 반응형: 화면이 좁아지면 패딩 줄이기 */
+@media (max-width: 1024px) {
+  .inner {
+    padding: 0 32px;  /* 태블릿 이하에선 32px 여백 */
+  }
+}
+@media (max-width: 600px) {
+  .inner {
+    padding: 0 16px;  /* 모바일에선 16px 여백 */
+  }
+}

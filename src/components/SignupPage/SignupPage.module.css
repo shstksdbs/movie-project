@@ -1,0 +1,224 @@
+/* src/components/SignupPage/SignupPage.module.css */
+
+:root {
+  --element-width: 550px;
+}
+
+.outer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 16px;
+  background: #060D15;
+  color: #E0E0E0;
+}
+
+.invalid {
+  color: #ff5c5c !important;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+  width: min(100%, var(--element-width));
+}
+
+.subtitle {
+  font-size: 1rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #aaa;
+  width: min(100%, var(--element-width));
+}
+
+.inputGroup {
+  width: min(100%, var(--element-width));
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+  flex: 1;
+}
+
+.inputGroupRow {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  width: min(100%, var(--element-width));
+  position: relative;
+  align-items: flex-start;
+  /* 설명글이 있어도 정렬 깨지지 않게 */
+  flex-wrap: nowrap;
+}
+
+.eyeBtn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.eyeIcon {
+  width: 24px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+
+.input {
+  flex: 1;
+  width: var(--element-width);
+  padding: 1.25rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #262626;
+  color: #A7A7A7;
+  outline: none;
+}
+
+.input::placeholder {
+  color: #777;
+}
+
+.inputDesc {
+  font-size: 0.75rem;
+  /* 작게 */
+  color: #777;
+  /* 회색 계열 */
+  padding-left: 2px;
+  /* 살짝 들여쓰기하면 더 자연스러움 */
+}
+
+
+.button {
+  width: 150px;
+  padding: 1rem 1rem;
+  background: none;
+  color: #ccc;
+  border: #3D3D3D 1px solid;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.emailButtonInactive {
+  background-color: none;
+  opacity: 60%;
+  color: #999;
+  cursor: default;
+  border: 1px solid #3D3D44;
+  transition: all 0.2s ease;
+}
+
+
+.codeButtonInactive {
+  background-color: none;
+  opacity: 60%;
+  color: #999;
+  cursor: default;
+  border: 1px solid #3D3D44;
+  transition: all 0.2s ease;
+}
+
+.checkboxGroup {
+  width: min(100%, var(--element-width));
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  color: #ccc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkboxRow img {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.checkboxRow img:first-child {
+  margin-left: 4px;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.bigCheckIcon {
+  margin-left: 0px !important;
+  width: 1rem !important;
+  height: 1rem !important;
+}
+
+.checkboxRow span {
+  flex: 1;
+}
+
+.nextIcon {
+  object-fit: contain;
+  display: block;
+}
+
+
+
+.termsToggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-top: 1px solid #444;
+  font-size: 0.9rem;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.submitBtn {
+  width: min(100%, var(--element-width));
+  padding: 1rem;
+  font-size: 1rem;
+  background: #F4BB1F;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.submitBtn:disabled {
+  background: #444;
+  color: #888;
+  cursor: default;
+}
+
+.loginLink {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.loginLink a {
+  color: #eee;
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  :root {
+    --element-width: 90vw;
+  }
+}
