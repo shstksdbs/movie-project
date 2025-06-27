@@ -15,9 +15,8 @@ export default function LoginPage() {
     navigate('/loginform');
   };
 
-  const handleSocialLogin = provider => {
-    // 예시: OAuth2 엔드포인트로 리디렉트
-    window.location.href = `/oauth2/authorize/${provider}`;
+  const handleSocialLogin = (provider) => {
+    window.location.href = `http://localhost/oauth2/authorization/${provider}`;
   };
 
   return (
@@ -49,7 +48,7 @@ export default function LoginPage() {
         >
           <img src={naverIcon} alt="Naver" />
           <span className={styles.btnText}>네이버로 시작하기</span>
-          
+
         </button>
 
         <button
@@ -59,15 +58,15 @@ export default function LoginPage() {
         >
           <img src={kakaoIcon} alt="Kakao" />
           <span className={styles.btnText}>카카오로 시작하기</span>
-          
+
         </button>
       </div>
 
       <div className={styles.findRow}>
-       <span>아이디/비밀번호를 잊으셨나요?</span>
-       <Link to="/find-id" className={styles.findLink}>아이디 찾기</Link>
-       <Link to="/find-password" className={styles.findLink}>비밀번호 찾기</Link>
-     </div>
+        <span>아이디/비밀번호를 잊으셨나요?</span>
+        <Link to="/find-id" className={styles.findLink}>아이디 찾기</Link>
+        <Link to="/find-password" className={styles.findLink}>비밀번호 찾기</Link>
+      </div>
     </div>
   );
 }

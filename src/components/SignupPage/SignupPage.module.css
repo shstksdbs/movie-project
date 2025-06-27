@@ -169,14 +169,15 @@ input:-webkit-autofill {
   height: 0.75rem;
 }
 
+
+.checkboxRow span {
+  flex: 1;
+}
+
 .bigCheckIcon {
   margin-left: 0px !important;
   width: 1rem !important;
   height: 1rem !important;
-}
-
-.checkboxRow span {
-  flex: 1;
 }
 
 .nextIcon {
@@ -264,7 +265,7 @@ input:-webkit-autofill {
   font-weight: 400;
 }
 
-.modaltext{
+.modaltext {
   margin-bottom: 20px;
   margin-right: 20px;
   color: #aaa;
@@ -289,56 +290,33 @@ input:-webkit-autofill {
   background: none;
   font-size: 18px;
   font-weight: 400;
-  
+
   line-height: 1.7;
 }
 
 /* 크롬, 엣지, 사파리용 */
 .termsScroll::-webkit-scrollbar {
-  width: 4px;                /* 아주 얇게 */
-  background: transparent;    /* 트랙(배경) 투명 */
+  width: 4px;
+  /* 아주 얇게 */
+  background: transparent;
+  /* 트랙(배경) 투명 */
 }
 
 .termsScroll::-webkit-scrollbar-thumb {
-  background: #555;           /* 스크롤바 색상(짙은 회색) */
-  border-radius: 3px;         /* 살짝 둥글게 */
-  min-height: 12px;           /* 너무 짧아지지 않게 */
+  background: #555;
+  /* 스크롤바 색상(짙은 회색) */
+  border-radius: 3px;
+  /* 살짝 둥글게 */
+  min-height: 12px;
+  /* 너무 짧아지지 않게 */
 }
 
 .termsScroll::-webkit-scrollbar-track {
-  background: transparent;    /* 트랙(배경) 투명 */
+  background: transparent;
+  /* 트랙(배경) 투명 */
 }
 
-.privacyTableWrapper {
-  width: 95%;
-  overflow-x: auto;
-  margin: 24px 0;
-}
 
-.privacyTable {
-  width: 100%;
-  border-collapse: collapse;
-  background: none;
-  color: #aaa;
-  font-size: 15px;
-  min-width: 400px;
-  
-}
-
-.privacyTable th,
-.privacyTable td {
-  border: 1px solid #333;
-  padding: 16px 12px;
-  text-align: left;
-  vertical-align: top;
-  vertical-align: middle;
-}
-
-.privacyTable th {
-  background: #232323;
-  font-weight: 700;
-  font-size: 16px;
-}
 
 
 @media (max-width: 480px) {
