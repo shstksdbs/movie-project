@@ -5,20 +5,22 @@ import LoginPage from './components/LoginPage/LoginPage';
 import SignupPage from './components/SignupPage/SignupPage';
 import FilmerLoginPage from './components/FilmerLoginPage/FilmerLoginPage';
 import { ToastContainer } from 'react-toastify';
+import { UserProvider } from './contexts/UserContext';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function App() {
   return (
-    <BrowserRouter>
-    <ToastContainer position="top-center" autoClose={2000} />
-      <DefaultLayout>
-        <Routes>
-          <Route path="/login"  element={<LoginPage />} />
-          <Route path="/loginform" element={<FilmerLoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          
-        </Routes>
-      </DefaultLayout>
-    </BrowserRouter>
+    <UserProvider>
+      <BrowserRouter>
+        <ToastContainer position="top-center" autoClose={2000} />
+        <DefaultLayout>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/loginform" element={<FilmerLoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Routes>
+        </DefaultLayout>
+      </BrowserRouter>
+    </UserProvider>
   );
 }

@@ -1,26 +1,67 @@
 // src/components/FilmerLoginPage/FilmerLoginPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './FilmerLoginPage.module.css';
 import eyeOpen from '../../assets/eye_icon.png';
 import eyeClosed from '../../assets/closedeye_icon.png';
 import checkFalse from '../../assets/check_false.png';
 import checkTrue from '../../assets/check_true.png';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../contexts/UserContext';
 
 export default function FilmerLoginPage() {
   const [form, setForm] = useState({ username: '', password: '' });
   const [showPw, setShowPw] = useState(false);
   const [autoLogin, setAutoLogin] = useState(false);
   const navigate = useNavigate();
+  const { user, setUser } = useUser();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const handleChange = e => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = e => {
+
+  //로그인하기
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: 로그인 로직 연결
+    try {
+      const response = await fetch('/api/user-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          loginId: form.username,
+          password: form.password
+        }),
+        credentials: 'include' // 세션/쿠키 인증 시 필요
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        // 로그인 성공
+        setShowProfileMenu(false);
+        setMenuVisible(false);
+        setUser(data.user);
+        if (autoLogin) {
+          // 자동 로그인 체크 시 localStorage에 저장
+          localStorage.setItem('autoLogin', 'true');
+          localStorage.setItem('user', JSON.stringify(data.user));
+        } else {
+          localStorage.removeItem('autoLogin');
+          localStorage.removeItem('user');
+        }
+        alert(`${data.user.nickname}님, 환영합니다!`);
+        // 또는 toast.success(`${data.user.nickname}님, 환영합니다!`);
+        // 메인 페이지 등으로 이동
+        navigate('/');
+      } else {
+        alert(data.message || '로그인에 실패했습니다.');
+        // 또는 toast.error(data.message || '로그인에 실패했습니다.');
+      }
+    } catch (error) {
+      alert('서버 오류가 발생했습니다.');
+      // 또는 toast.error('서버 오류가 발생했습니다.');
+    }
   };
 
   const handleLogin = () => {

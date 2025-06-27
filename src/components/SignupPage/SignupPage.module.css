@@ -4,6 +4,16 @@
   --element-width: 550px;
 }
 
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #181c23 inset !important;
+  /* 원하는 배경색 */
+  box-shadow: 0 0 0 1000px #262626 inset !important;
+  -webkit-text-fill-color: #a7a7a7 !important;
+  /* 글자색 */
+  color: #fff !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 .outer {
   min-height: 100vh;
   display: flex;
@@ -216,6 +226,120 @@
   color: #eee;
   text-decoration: underline;
 }
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  /* 어두운 오버레이 */
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  background: #252525;
+  color: #fff;
+  width: 100vw;
+  height: 50vh;
+  max-width: 650px;
+  max-height: 80vh;
+  padding: 40px 32px 40px 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.modaltext{
+  margin-bottom: 20px;
+  margin-right: 20px;
+  color: #aaa;
+}
+
+.closeIcon {
+  font-size: 24px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.modalbigtext {
+  color: #aaa;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 0px;
+}
+
+.termsScroll {
+  overflow-y: auto;
+  max-height: 50vh;
+  background: none;
+  font-size: 18px;
+  font-weight: 400;
+  
+  line-height: 1.7;
+}
+
+/* 크롬, 엣지, 사파리용 */
+.termsScroll::-webkit-scrollbar {
+  width: 4px;                /* 아주 얇게 */
+  background: transparent;    /* 트랙(배경) 투명 */
+}
+
+.termsScroll::-webkit-scrollbar-thumb {
+  background: #555;           /* 스크롤바 색상(짙은 회색) */
+  border-radius: 3px;         /* 살짝 둥글게 */
+  min-height: 12px;           /* 너무 짧아지지 않게 */
+}
+
+.termsScroll::-webkit-scrollbar-track {
+  background: transparent;    /* 트랙(배경) 투명 */
+}
+
+.privacyTableWrapper {
+  width: 95%;
+  overflow-x: auto;
+  margin: 24px 0;
+}
+
+.privacyTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: none;
+  color: #aaa;
+  font-size: 15px;
+  min-width: 400px;
+  
+}
+
+.privacyTable th,
+.privacyTable td {
+  border: 1px solid #333;
+  padding: 16px 12px;
+  text-align: left;
+  vertical-align: top;
+  vertical-align: middle;
+}
+
+.privacyTable th {
+  background: #232323;
+  font-weight: 700;
+  font-size: 16px;
+}
+
 
 @media (max-width: 480px) {
   :root {
