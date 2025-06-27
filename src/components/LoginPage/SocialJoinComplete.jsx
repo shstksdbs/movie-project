@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styles from "./FilmerExtraInfoPage.module.css";
+import styles from "./SocialJoinComplete.module.css";
 import { toast } from 'react-toastify';
 import checkTrue2 from '../../assets/check_true2.png';
 import checkFalse2 from '../../assets/check_false2.png';

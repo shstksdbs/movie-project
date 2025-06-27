@@ -89,3 +89,39 @@
     padding: 8px 16px;
   }
 }
+
+@media (max-width: 768px) {
+  .inner {
+    padding: 10px 10px;
+  }
+  .menu {
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .info {
+    font-size: 0.85rem;
+  }
+  .copy {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .inner {
+    padding: 4px 4px;
+  }
+  .menu {
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  .info {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  .copy {
+    font-size: 0.6rem;
+    margin-top: 0.2rem;
+  }
+}

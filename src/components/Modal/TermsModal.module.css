@@ -63,3 +63,46 @@
     background: transparent;
     /* 트랙(배경) 투명 */
 }
+
+@media (max-width: 1024px) {
+  .modalContent {
+    max-width: 480px;
+    padding: 24px 16px 24px 16px;
+    font-size: 0.98rem;
+  }
+  .modalHeader {
+    font-size: 22px;
+  }
+  .modalbigtext {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modalContent {
+    max-width: 320px;
+    padding: 12px 8px 12px 8px;
+    font-size: 0.95rem;
+  }
+  .modalHeader {
+    font-size: 16px;
+  }
+  .modalbigtext {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modalContent {
+    max-width: 98vw;
+    height: 60vh;
+    padding: 6px 2px 6px 2px;
+    font-size: 0.9rem;
+  }
+  .modalHeader {
+    font-size: 13px;
+  }
+  .modalbigtext {
+    font-size: 10px;
+  }
+}

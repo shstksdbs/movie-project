@@ -40,3 +40,40 @@
     color: #aaa;
     cursor: pointer;
 }
+
+@media (max-width: 1024px) {
+  .content {
+    width: 40vw;
+    min-width: 260px;
+    padding: 1.5rem 1rem 1rem 1rem;
+    font-size: 0.98rem;
+  }
+  .header {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    width: 60vw;
+    min-width: 180px;
+    padding: 1rem 0.7rem 0.7rem 0.7rem;
+    font-size: 0.95rem;
+  }
+  .header {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    width: 95vw;
+    min-width: 0;
+    height: 60vh;
+    padding: 0.7rem 0.3rem 0.3rem 0.3rem;
+    font-size: 0.9rem;
+  }
+  .header {
+    font-size: 16px;
+  }
+}

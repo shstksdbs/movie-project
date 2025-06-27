@@ -20,6 +20,8 @@
   padding: 80px 16px;
   background: #060D15;
   color: #E0E0E0;
+  transform: scale(1.2);
+  transform-origin: center center;
 }
 
 /* 2) 로고 & 타이틀 */
@@ -193,30 +195,72 @@
 }
 
 /* ──────── 반응형 추가 ──────── */
+@media (max-width: 1024px) {
+  :root {
+    --input-width: 380px;
+    --button-width: 380px;
+  }
+  .title {
+    font-size: 1.7rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --input-width: 300px;
+    --button-width: 300px;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .input {
+    font-size: 0.95rem;
+    padding: 1rem 2.2rem 1rem 1rem;
+  }
+  .primaryBtn,
+  .secondaryBtn {
+    font-size: 0.95rem;
+    padding: 0.85rem;
+  }
+  .note {
+    font-size: 0.7rem;
+    margin-top: 1rem;
+  }
+}
+
 @media (max-width: 480px) {
   :root {
     --input-width: 90vw;
     --button-width: 90vw;
   }
-
-  .title {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
+  .outer {
+    padding: 32px 4px;
   }
-
+  .title {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
   .primaryBtn,
   .secondaryBtn {
-    font-size: 0.95rem;
-    padding: 0.9rem;
+    font-size: 0.9rem;
+    padding: 0.7rem;
   }
-
   .input {
-    font-size: 1rem;
-    padding: 0.9rem 2.5rem 0.9rem 1rem;
+    font-size: 0.9rem;
+    padding: 0.7rem 2rem 0.7rem 0.7rem;
   }
-
   .note {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    margin-top: 0.7rem;
+  }
+  .links {
+    font-size: 0.8rem;
     margin-top: 1rem;
   }
+}
+
+/* 최소/최대 너비 제한 */
+.input, .primaryBtn, .secondaryBtn {
+  min-width: 180px;
+  max-width: 100vw;
 }
