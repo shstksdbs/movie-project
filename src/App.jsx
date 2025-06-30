@@ -11,6 +11,8 @@ import { UserProvider } from './contexts/UserContext';
 import 'react-toastify/dist/ReactToastify.css';
 import FindIdPage from './components/LoginPage/FindIdPage';
 import FindIdResultPage from './components/LoginPage/FindIdResultPage';
+import FindPasswordPage from './components/LoginPage/FindPasswordPage';
+import ResetPasswordPage from './components/LoginPage/ResetPasswordPage';
 
 export default function App() {
   return (
@@ -26,6 +28,8 @@ export default function App() {
             <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
             <Route path="/find-id" element={<FindIdPage />} />
             <Route path="/find-id-result" element={<FindIdResultPage />} />
+            <Route path="/find-password" element={<FindPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Routes>
         </DefaultLayout>
       </BrowserRouter>

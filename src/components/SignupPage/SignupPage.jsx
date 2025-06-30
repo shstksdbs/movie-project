@@ -37,6 +37,7 @@ export default function SignupPage() {
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [verifiedCode, setVerifiedCode] = useState(''); // 인증 완료된 코드 저장
 
   const isUsernameValid = /^[a-z0-9]{6,12}$/.test(form.username);
   const isNicknameValid = /^[a-zA-Z가-힣0-9]{2,8}$/.test(form.nickname);
@@ -71,6 +72,13 @@ export default function SignupPage() {
     }));
     if (name === "email") {
       setIsEmailChecked(false); // 이메일이 바뀌면 다시 중복확인 필요
+      setIsCodeValid(null); // 이메일 인증 상태 초기화
+      setVerifiedCode(''); // 인증 완료된 코드 초기화
+      setShowCodeInput(false); // 인증 입력창 숨기기
+      if (timerId) {
+        clearInterval(timerId);
+        setTimer(0);
+      }
     }
   };
 
@@ -90,11 +98,13 @@ export default function SignupPage() {
           passwordConfirm: form.confirmPassword,
           nickname: form.nickname,
           email: form.email,
-          verificationCode: form.code
+          verificationCode: verifiedCode // 인증 완료된 코드 사용
         })
       });
 
       const data = await response.json();
+      console.log('11');
+      console.log(verifiedCode);
 
       if (response.ok) {
         toast.success(`${data.nickname}님, 회원가입이 완료되었습니다!`);
@@ -229,6 +239,7 @@ export default function SignupPage() {
       if (data.success) {
         toast.success("이메일 인증이 완료되었습니다!");
         setIsCodeValid(true); // 인증 성공 상태로 변경
+        setVerifiedCode(form.code); // 인증 완료된 코드 저장
         setShowCodeInput(false); // 인증 입력창 닫기 등
         setForm(prev => ({ ...prev, code: '' }));
       } else {
@@ -448,7 +459,7 @@ export default function SignupPage() {
       <p className={styles.loginLink}>
         이미 계정이 있으신가요? <a href="/login">로그인</a>
       </p>
-      
+
       <TermsModal show={showTermsModal} onClose={() => setShowTermsModal(false)} />
       <PrivacyModal show={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} />
     </div>
