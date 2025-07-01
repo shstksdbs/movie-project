@@ -212,6 +212,8 @@ export default function SignupPage() {
           });
         }, 1000);
         setTimerId(id);
+        // 이메일 발송 성공 시 로그인 페이지로 이동
+        window.location.href = '/login';
       } else {
         toast.error(data.message || "인증번호 발송에 실패했습니다.");
       }

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from './LoginPage.module.css';
 
 import logo from '../../assets/logo_icon.png';
@@ -9,6 +9,21 @@ import kakaoIcon from '../../assets/kakao_logo.png';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const msg = params.get('message');
+    if (msg) {
+      setErrorMessage(decodeURIComponent(msg));
+      // 2초 후 메시지 사라지고 URL에서 쿼리스트링 제거
+      setTimeout(() => {
+        setErrorMessage('');
+        navigate('/login', { replace: true });
+      }, 2000);
+    }
+  }, [location, navigate]);
 
   const handleFilmerLogin = () => {
     // 자체 ID/PW 로그인 폼으로 이동
@@ -22,6 +37,10 @@ export default function LoginPage() {
   return (
     <div className={styles.outer}>
       <h2 className={styles.heading}>반가워요!<br></br>계정을선택해주세요.</h2>
+      {/* 에러 메시지 표시 */}
+      {errorMessage && (
+        <div style={{ color: 'red', marginBottom: '16px', fontWeight: 'bold' }}>{errorMessage}</div>
+      )}
       <div className={styles.buttonGroup}>
         <button
           type="button"

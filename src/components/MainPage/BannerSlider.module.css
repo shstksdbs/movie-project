@@ -1,0 +1,100 @@
+.sliderWrapper {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  padding: 2rem 0;
+}
+
+.slider {
+  width: 1920px;
+  margin: 0 auto;
+  position: relative;
+  height: 640px;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slide {
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  border-radius: 1rem;
+  transition: all 0.5s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+/* 메인 배너 */
+.active {
+  width: 100%;
+  transform: scale(1);
+  opacity: 1;
+  z-index: 3;
+  margin: 0 1vw;
+}
+
+
+
+/* 좌우 배너 */
+.prev,
+.next {
+  width: 3%;
+  z-index: 2;
+}
+
+.firstBanner {
+  padding-left: 3rem; /* 예: 왼쪽 여백 주기 */
+
+}
+
+
+.prev {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.next {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* 나머지 배너 숨김 */
+.hidden {
+  display: none;
+}
+
+/* 좌우 버튼 */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  z-index: 4;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+
+.left {
+  left: 1.5vw;
+}
+
+.right {
+  right: 1.5vw;
+}
+
+/* 제목 */
+.title {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px black;
+}

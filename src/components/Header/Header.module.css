@@ -3,6 +3,7 @@
 .header {
   background: var(--color-bg);
   padding: 1.5rem 0;
+  
   /* 위아래 높이는 기존 그대로 유지하세요 */
 }
 
@@ -10,11 +11,11 @@
   /* 1) 전체 폭 100% 중에서… */
   width: 100%;
 
-  /* 2) 최대 콘텐츠 너비는 1780px (=1920−30×2) */
+  /* 2) 최대 콘텐츠 너비는 1780px (=1920−50×2) */
   max-width: 1860px;
 
-  /* 3) 양쪽 70px씩 고정 패딩 */
-  padding: 0 30px;
+  /* 3) 양쪽 50px씩 고정 패딩 */
+  padding: 0 50px;
 
   /* 4) 중앙 정렬 */
   margin: 0 auto;
@@ -25,7 +26,7 @@
 }
 
 .logo img {
-  height: 1.5rem;
+  height: 2rem;
   /* 필요하다면 크기 조절 */
 }
 
@@ -51,8 +52,8 @@
 }
 
 .icon {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   margin-right: 15px;
 }
 
@@ -60,13 +61,13 @@
   display: flex;
   align-items: center;
   /* 세로 가운데 정렬 */
-  gap: 8px;
+  gap: 1rem;
   /* 이미지와 닉네임 사이 간격 */
 }
 
 .profileImg {
-  width: 28px;
-  height: 28px;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   background: #333;
   object-fit: cover;
@@ -75,7 +76,7 @@
 
 .nickname {
   color: #ccc;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 500;
 }
 

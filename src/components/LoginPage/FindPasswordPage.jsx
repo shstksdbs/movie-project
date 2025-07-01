@@ -23,6 +23,7 @@ export default function FindPasswordPage() {
             const data = await res.json();
             if (data.success !== false) {
                 toast.success('인증 메일이 발송되었습니다. 메일을 확인해 주세요.');
+                //window.location.href = '/login';
             } else {
                 setMessage(data.message || '오류가 발생했습니다.');
             }
@@ -46,14 +47,7 @@ export default function FindPasswordPage() {
 
                         <div className={styles.buttonGroup}>
 
-                            <input
-                                className={styles.input}
-                                type="text"
-                                placeholder="아이디"
-                                value={loginId}
-                                onChange={e => setLoginId(e.target.value)}
-                                required
-                            />
+                            
                             <input
                                 className={styles.input}
                                 type="email"
@@ -65,7 +59,7 @@ export default function FindPasswordPage() {
                             <button
                                 className={styles.primaryBtn}
                                 type="submit"
-                                disabled={loading || !loginId || !email}
+                                disabled={loading || !email}
                             >
                                 인증 메일 받기
                             </button>

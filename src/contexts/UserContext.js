@@ -10,7 +10,7 @@ export function UserProvider({ children }) {
         // 자동 로그인 정보가 있으면 복원
         const autoLogin = localStorage.getItem('autoLogin');
         const userData = localStorage.getItem('user');
-        if (autoLogin && userData) {
+        if (userData) {
             setUser(JSON.parse(userData));
         }
     }, []);

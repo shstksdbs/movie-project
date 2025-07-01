@@ -8,11 +8,13 @@ import checkFalse from '../../assets/check_false.png';
 import nextIcon from '../../assets/next.png';
 import TermsModal from '../Modal/TermsModal';
 import PrivacyModal from '../Modal/PrivacyModal';
+import { useUser } from '../../contexts/UserContext';
 
 
 export default function FilmerExtraInfoPage() {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const { setUser } = useUser();
   const [form, setForm] = useState({
     nickname: '',
     agreeAll: false,
@@ -107,10 +109,19 @@ export default function FilmerExtraInfoPage() {
       const data = await response.json();
 
       if (data.success) {
+        // 소셜 회원가입 성공 후 현재 유저 정보 받아오기
+        fetch('/api/current-user', { credentials: 'include' })
+          .then(res => res.json())
+          .then(currentUserData => {
+            if (currentUserData.success && currentUserData.user) {
+              setUser(currentUserData.user);
+              localStorage.setItem('user', JSON.stringify(currentUserData.user));
+            }
+          });
         // 성공 처리 (예: 알림, 리다이렉트 등)
         toast.success(data.message || "소셜 회원가입이 완료되었습니다!");
         setTimeout(() => {
-          window.location.href = '/login'; // 로그인 페이지로 이동 등
+          window.location.href = '/'; // 로그인 페이지로 이동 등
         }, 1500);
       } else {
         toast.error(data.message || "회원가입에 실패했습니다.");

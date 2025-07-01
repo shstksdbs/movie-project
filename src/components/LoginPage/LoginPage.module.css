@@ -82,7 +82,7 @@
 }
 
 .findRow span {
-  /* "아이디/비밀번호를 잊으셨나요?" 텍스트 */
+  /* “아이디/비밀번호를 잊으셨나요?” 텍스트 */
   margin-right: 1rem;
 }
 
@@ -98,82 +98,7 @@
 
 
 /* 반응형: 모바일은 버튼 좀 더 크게 */
-@media (max-width: 1024px) {
-  .outer {
-    transform: scale(1.08);
-    padding: 1.5rem 0.5rem;
-  }
-  .heading {
-    font-size: 1.25rem;
-  }
-  .buttonGroup {
-    max-width: 380px;
-  }
-  .btnPrimary, .btnSocial {
-    font-size: 0.95rem;
-    padding: 0.7rem 0.8rem;
-  }
-  .btnPrimary img, .btnSocial img {
-    width: 1.2rem;
-    height: 1.2rem;
-    margin-right: 0.5rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .outer {
-    transform: scale(1);
-    padding: 1rem 0.2rem;
-  }
-  .heading {
-    font-size: 1.1rem;
-  }
-  .buttonGroup {
-    max-width: 300px;
-  }
-  .btnPrimary, .btnSocial {
-    font-size: 0.9rem;
-    padding: 0.6rem 0.6rem;
-  }
-  .btnPrimary img, .btnSocial img {
-    width: 1rem;
-    height: 1rem;
-    margin-right: 0.4rem;
-  }
-  .findRow {
-    font-size: 0.8rem;
-    margin-top: 1.2rem;
-  }
-}
-
 @media (max-width: 480px) {
-  .outer {
-    transform: scale(0.98);
-    padding: 0.5rem 0.1rem;
-  }
-  .heading {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-  }
-  .buttonGroup {
-    max-width: 95vw;
-    width: 100%;
-    gap: 0.7rem;
-  }
-  .btnPrimary, .btnSocial {
-    font-size: 0.85rem;
-    padding: 0.5rem 0.3rem;
-  }
-  .btnPrimary img, .btnSocial img {
-    width: 0.9rem;
-    height: 0.9rem;
-    margin-right: 0.3rem;
-  }
-  .findRow {
-    font-size: 0.7rem;
-    margin-top: 0.7rem;
-    flex-direction: column;
-    gap: 0.2rem;
-    align-items: flex-start;
-  }
+  .heading { font-size: 1.25rem; }
+  .btnPrimary, .btnSocial { font-size: 0.95rem; padding: 0.75rem; }
 }
