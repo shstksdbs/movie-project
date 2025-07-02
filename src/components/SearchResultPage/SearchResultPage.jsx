@@ -1,23 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import MovieHorizontalSlider from '../MainPage/MovieHorizontalSlider';
 import styles from './SearchResultPage.module.css';
 import searchIcon from '../../assets/search_icon.png';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
-const dummyMovies = Array.from({ length: 12 }, (_, i) => ({
-  id: i,
-  title: `영화 제목${i+1}`,
-  year: 2025,
-  country: '미국',
-  rating: 5.0,
-  audience: '24만',
-}));
-
-const dummyActors = Array.from({ length: 9 }, (_, i) => ({
-  id: i,
-  name: `이름${i+1}`,
-  role: '배우',
-}));
+import MovieCard from '../MainPage/MovieCard';
 
 function ActorCard({ actor }) {
   return (
@@ -39,7 +24,7 @@ function ActorHorizontalSlider({ data }) {
       {start > 0 && <button className={`${styles.navBtn} ${styles.left}`} onClick={prev}>{'<'}</button>}
       <div className={styles.slider}>
         {data.slice(start, start + visible).map((actor, idx) => (
-          <ActorCard key={actor.id} actor={actor} />
+          <ActorCard key={actor.name + actor.role} actor={actor} />
         ))}
       </div>
       {start + visible < data.length && <button className={`${styles.navBtn} ${styles.right}`} onClick={next}>{'>'}</button>}
@@ -51,7 +36,51 @@ export default function SearchResultPage() {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get('query') || '';
   const [search, setSearch] = useState(initialQuery);
+  const [movies, setMovies] = useState([]);
+  const [people, setPeople] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   useEffect(() => { setSearch(initialQuery); }, [initialQuery]);
+
+  useEffect(() => {
+    if (!search) return;
+    setLoading(true);
+    setError(null);
+    fetch(`http://localhost:80/data/api/movie-detail-dto/search?keyword=${encodeURIComponent(search)}&page=0&size=20`)
+      .then(res => {
+        if (!res.ok) throw new Error('검색 실패');
+        return res.json();
+      })
+      .then(data => {
+        const movies = data.data || [];
+        setMovies(movies);
+
+        // 인물 추출
+        const peopleMap = {};
+        const peopleList = [];
+        movies.forEach(movie => {
+          (movie.directors || []).forEach(dir => {
+            if (dir.peopleNm && !peopleMap[dir.peopleNm]) {
+              peopleMap[dir.peopleNm] = true;
+              peopleList.push({ name: dir.peopleNm, role: '감독' });
+            }
+          });
+          (movie.actors || []).forEach(actor => {
+            if (actor.peopleNm && !peopleMap[actor.peopleNm]) {
+              peopleMap[actor.peopleNm] = true;
+              peopleList.push({ name: actor.peopleNm, role: '배우' });
+            }
+          });
+        });
+        setPeople(peopleList);
+        console.log('영화:', movies);   // ← 여기 추가
+        console.log('인물:', peopleList); // ← 여기 추가
+      })
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [search]);
+
   const navigate = useNavigate();
   const handleSearch = () => {
     if (search.trim()) {
@@ -61,6 +90,7 @@ export default function SearchResultPage() {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSearch();
   };
+
   return (
     <div className={styles.main}>
       <div className={styles.searchBarWrap}>
@@ -69,28 +99,27 @@ export default function SearchResultPage() {
       </div>
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>영화</h2>
-        {dummyMovies.length > 7 ? (
-          <MovieHorizontalSlider data={dummyMovies} />
-        ) : (
-          <div className={styles.cardList}>
-            {dummyMovies.map(movie => (
-              <div key={movie.id} className={styles.movieCardDummy}>영화 제목</div>
-            ))}
-          </div>
-        )}
+        {loading && <div>로딩중...</div>}
+        {error && <div style={{ color: 'red' }}>{error}</div>}
+        {(!loading && movies.length === 0) && <div>검색 결과가 없습니다.</div>}
+        <div className={styles.cardList}>
+          {movies.map((movie, idx) => (
+            <MovieCard key={movie.movieCd || idx} movie={movie} index={idx + 1} showOpenDt={false} />
+          ))}
+        </div>
       </div>
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>인물</h2>
-        {dummyActors.length > 7 ? (
-          <ActorHorizontalSlider data={dummyActors} />
+        {people.length > 7 ? (
+          <ActorHorizontalSlider data={people} />
         ) : (
           <div className={styles.cardList}>
-            {dummyActors.map(actor => (
-              <ActorCard key={actor.id} actor={actor} />
+            {people.map(actor => (
+              <ActorCard key={actor.name + actor.role} actor={actor} />
             ))}
           </div>
         )}
       </div>
     </div>
   );
-} 
+}

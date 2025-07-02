@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './MovieCard.module.css';
 
-export default function MovieCard({ movie, index, sectionKey, actorInfo }) {
+export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpenDt = true }) {
   function getDDay(openDt) {
     if (!openDt) return null;
     const today = new Date();
@@ -59,7 +59,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo }) {
         <div className={styles.title}>{movie.movieNm || '-'}</div>
         <div className={styles.info}>
           <span className={styles.comingSoonDate}>
-            {movie.year || movie.openDt || '-'}
+            {showOpenDt ? (movie.year || movie.openDt || '-') : null}
           </span>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo }) {
         <div className={styles.title}>{movie.movieNm || movie.title || '-'}</div>
         <div className={styles.info}>
           <span>
-            {movie.year || movie.openDt || '-'}
+            {showOpenDt ? (movie.year || movie.openDt || '-') : null}
             {movie.showTm ? ` · ${movie.showTm}분` : ''}
           </span>
         </div>
@@ -113,7 +113,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo }) {
       <div className={styles.title}>{movie.movieNm || '-'}</div>
       <div className={styles.info}>
         <span>
-          {movie.year || movie.openDt || '-'}
+          {showOpenDt ? (movie.year || movie.openDt || '-') : null}
           {movie.showTm ? ` · ${movie.showTm}분` : ''}
         </span>
       </div>
@@ -143,8 +143,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo }) {
       <div className={styles.title}>{movie.movieNm || '-'}</div>
       <div className={styles.info}>
         <span>
-          {movie.year || movie.openDt || '-'}
-          
+          {showOpenDt ? (movie.year || movie.openDt || '-') : null}
         </span>
       </div>
       
