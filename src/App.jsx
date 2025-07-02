@@ -14,6 +14,7 @@ import FindIdResultPage from './components/LoginPage/FindIdResultPage';
 import FindPasswordPage from './components/LoginPage/FindPasswordPage';
 import ResetPasswordPage from './components/LoginPage/ResetPasswordPage';
 import MainPage from './components/MainPage/MainPage';
+import SearchResultPage from './pages/SearchResultPage';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/find-password" element={<FindPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/" element={<MainPage />} />
+            <Route path="/search" element={<SearchResultPage />} />
           </Routes>
         </DefaultLayout>
       </BrowserRouter>

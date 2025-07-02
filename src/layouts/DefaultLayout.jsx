@@ -4,7 +4,7 @@ import Footer from '../components/Footer/Footer';
 
 export default function DefaultLayout({ children }) {
   const location = useLocation();
-  const isMainPage = location.pathname === '/'; // 메인페이지일 때만 조건
+  const isMainOrSearchPage = location.pathname === '/' || location.pathname.startsWith('/search');
 
   return (
     <div className="app-root" style={{
@@ -19,7 +19,7 @@ export default function DefaultLayout({ children }) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        ...(isMainPage ? {} : { alignItems: 'center' })  // ✅ 메인페이지만 제외
+        ...(isMainOrSearchPage ? {} : { alignItems: 'center' })
       }}>
         {children}
       </main>

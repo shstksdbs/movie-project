@@ -1,0 +1,110 @@
+.overlay {
+  position: absolute;
+  top: 80px !important;
+  left: 0; right: 0; bottom: 0;
+  width: 100vw;
+  background: var(--color-bg);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: rgba(0, 0, 0, 1) !important;
+  /* top, height는 style props로 제어 */
+}
+.modal {
+  margin-top: 40px;
+  width: 80vw;
+  max-width: 1550px;
+  background: transparent;
+  border-radius: 12px;
+  box-shadow: none;
+  padding: 0;
+  position: relative;
+}
+.searchBarWrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 36px;
+  margin-top: 36px;
+}
+.searchInput {
+  flex: 1;
+  height: 5rem;
+  font-size: 1.5rem;
+  border: none;
+  border-radius: 4px;
+  padding: 0 20px;
+  background: #272727;
+  color: #fff;
+  outline: none;
+}
+.searchIcon {
+  width: 3rem;
+  height: 3rem;
+  margin-left: -5rem;
+  opacity: 0.7;
+  cursor: pointer;
+}
+.contentWrap {
+  display: flex;
+  height: 500px;
+  width: 100%;
+}
+.left, .right {
+  flex: 1;
+  background: none;
+}
+.title {
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 18px;
+}
+.empty {
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 10px;
+}
+.popularList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.popularList li {
+  color: #bbb;
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+.rank {
+  color: #ffd600;
+  font-weight: 500;
+  margin-right: 10px;
+  font-size: 1.2rem;
+  width: 24px;
+  display: inline-block;
+  text-align: left;
+}
+.verticalDivider {
+  width: 1px;
+  background: #414141;
+  opacity: 1;
+  height: 100%;
+  min-height: 180px;
+  align-self: center;
+  margin: 0 40px;
+}
+.timeStandard {
+  color: #888;
+  font-size: 1.05rem;
+  margin-top: 1.8rem;
+  text-align: left;
+}
+@media (max-width: 900px) {
+  .modal { width: 98vw; }
+  .contentWrap { flex-direction: column; gap: 0; }
+  .left, .right { width: 100%; }
+  .right { margin-top: 32px; }
+} 

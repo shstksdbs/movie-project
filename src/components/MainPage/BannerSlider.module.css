@@ -1,19 +1,27 @@
 .sliderWrapper {
   position: relative;
   width: 100%;
-  overflow: visible;
-  padding: 2rem 0;
+  overflow: hidden;
 }
 
 .slider {
-  width: 1920px;
-  margin: 0 auto;
-  position: relative;
-  height: 640px;
-  overflow: visible;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+  gap: 24px;
+  height: 640px;
+}
+
+@media (min-width: 768px) {
+  .slider {
+    height: 500px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .slider {
+    height: 600px;
+  }
 }
 
 .slide {
@@ -21,48 +29,37 @@
   background-size: cover;
   background-position: center;
   border-radius: 1rem;
-  transition: all 0.5s ease;
+  transition: all 0.2s ease;
   position: relative;
   cursor: pointer;
 }
 
-/* 메인 배너 */
-.active {
-  width: 100%;
-  transform: scale(1);
-  opacity: 1;
-  z-index: 3;
-  margin: 0 1vw;
-}
-
-
-
-/* 좌우 배너 */
-.prev,
-.next {
-  width: 3%;
-  z-index: 2;
-}
-
 .firstBanner {
-  padding-left: 3rem; /* 예: 왼쪽 여백 주기 */
-
+  margin-left: 70px;
 }
 
-
-.prev {
-  border-top-left-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
+.indicatorWrapper {
+  position: absolute;
+  right: 8rem;
+  bottom: 2.5rem;
+  display: flex;
+  gap: 0.6rem;
+  z-index: 5;
 }
 
-.next {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+.indicatorDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #888;
+  opacity: 0.5;
+  transition: background 0.2s, opacity 0.2s;
+  display: inline-block;
 }
 
-/* 나머지 배너 숨김 */
-.hidden {
-  display: none;
+.activeDot {
+  background: #fff;
+  opacity: 1;
 }
 
 /* 좌우 버튼 */
@@ -72,20 +69,32 @@
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: white;
-  font-size: 2rem;
   z-index: 4;
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navBtn img {
+  width: 2rem;
+  height: 2rem;
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.navBtn:hover img {
+  opacity: 1;
 }
 
 .left {
-  left: 1.5vw;
+  left: 0.4rem;
 }
 
 .right {
-  right: 1.5vw;
+  right: 0.4rem;
 }
 
 /* 제목 */

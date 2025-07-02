@@ -55,6 +55,7 @@
   width: 2.5rem;
   height: 2.5rem;
   margin-right: 15px;
+  cursor: pointer;
 }
 
 .profileInline {
@@ -191,6 +192,7 @@
     width: 1.5rem;
     height: 1.5rem;
     margin-right: 8px;
+    
   }
   .profileImg {
     width: 22px;
@@ -246,4 +248,31 @@
     font-size: 12px;
     padding: 6px 8px;
   }
+}
+
+.stickyHeader {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: var(--color-bg, #181c22);
+  padding: 1.5rem 0;
+  opacity: 0.95;
+}
+
+.searchCloseBtn {
+  background: none;
+  border: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #fff;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.activeSearch {
+  background: #000 !important;
+  opacity: 1 !important;
+  transition: background 0.2s;
 }

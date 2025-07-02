@@ -8,12 +8,13 @@ export default function OAuth2RedirectHandler() {
   const { setUser } = useUser();
 
   useEffect(() => {
+    console.log('OAuth2RedirectHandler 마운트됨', location.search);
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
+    
     if (token) {
-      localStorage.setItem('token', token);
       // 소셜 로그인 후 현재 유저 정보 받아오기
-      fetch('/api/current-user', { credentials: 'include' })
+      fetch('http://localhost:80/api/current-user', { credentials: 'include' })
         .then(res => res.json())
         .then(data => {
           if (data.success && data.user) {
