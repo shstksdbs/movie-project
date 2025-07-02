@@ -14,7 +14,7 @@ import FindIdResultPage from './components/LoginPage/FindIdResultPage';
 import FindPasswordPage from './components/LoginPage/FindPasswordPage';
 import ResetPasswordPage from './components/LoginPage/ResetPasswordPage';
 import MainPage from './components/MainPage/MainPage';
-import SearchResultPage from './pages/SearchResultPage';
+import SearchResultPage from './components/SearchResultPage/SearchResultPage';
 
 export default function App() {
   return (
