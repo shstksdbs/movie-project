@@ -43,7 +43,7 @@ export default function LoginPage() {
 
   return (
     <div className={styles.outer}>
-      <h2 className={styles.heading}>반가워요!<br></br>계정을선택해주세요.</h2>
+      <h3 className={styles.heading}>반가워요!<br />계정을 선택해주세요.</h3>
       {/* 에러 메시지 표시 */}
       {errorMessage && (
         <div style={{ color: 'red', marginBottom: '16px', fontWeight: 'bold' }}>{errorMessage}</div>

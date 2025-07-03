@@ -14,6 +14,7 @@ import FindPasswordPage from './components/LoginPage/FindPasswordPage';
 import ResetPasswordPage from './components/LoginPage/ResetPasswordPage';
 import MainPage from './components/MainPage/MainPage';
 import SearchResultPage from './components/SearchResultPage/SearchResultPage';
+import MovieDetailPage from './components/MovieDetailPage/MovieDetailPage';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/" element={<MainPage />} />
             <Route path="/search" element={<SearchResultPage />} />
+            <Route path="/movie-detail" element={<MovieDetailPage />} />
           </Routes>
         </DefaultLayout>
       </BrowserRouter>

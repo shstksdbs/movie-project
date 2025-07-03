@@ -1,0 +1,266 @@
+.detailBody {
+  width: 100%;
+  padding: 32px 0;
+  background: var(--background-color);
+  max-width: 1905px;
+}
+
+section {
+  margin-bottom: 48px;
+}
+
+h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-left: 80px;
+  margin-bottom: 18px;
+  font-weight: 700;
+  padding-left: 12px;
+}
+
+.castSliderTrack {
+  display: flex;
+  width: 100%;
+  gap: 140px;
+}
+
+.castGrid {
+  min-width: 1780px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* 4명씩 한 줄 */
+  gap: 32px 10px;
+  /* 줄 간격, 칸 간격 */
+  
+  margin: 30px 0;
+  transition: none;
+  will-change: auto;
+}
+
+.castCard {
+  display: flex;
+  align-items: center;
+  background: none;
+  padding: 12px 18px;
+  color: #fff;
+  gap: 16px;
+}
+
+.castImg {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.castInfo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.castName {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.castRole {
+  font-size: 0.95rem;
+  color: #b0b8c1;
+}
+
+.firstCastGrid {
+  margin-left: 70px;
+}
+
+/* 코멘트 카드 */
+.commentCard {
+  width: 400px;
+  height: 250px;
+  min-width: 220px;
+  background: #292929;
+  border-radius: 14px;
+  padding: 16px 14px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+  margin-bottom: 6px;
+}
+
+.commentUser {
+  color: #ffd700;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.commentContent {
+  color: #fff;
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+  word-break: keep-all;
+}
+
+.commentDate {
+  color: #aaa;
+  font-size: 0.92rem;
+  text-align: right;
+  margin-top: auto;
+}
+
+/* 비슷한 작품 카드 */
+.similarMovieCard {
+  width: 240px;
+  min-width: 240px;
+  height: 360px+120px;
+  background: --color-bg;
+
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.similarMovieCard:hover {
+  transform: translateY(-12px) scale(1.03);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 1.5px 6px rgba(0, 0, 0, 0.10);
+  z-index: 3;
+}
+
+.similarPoster {
+  width: 100%;
+  height: 360px;
+  /* 원하는 고정 높이 */
+  max-height: 360px;
+  background: #444;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  /* 순위(번호) 배치용 */
+  overflow: hidden;
+  /* 이미지가 넘치면 잘리게 */
+}
+
+.posterImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 비율 유지하며 꽉 채우기, 넘치는 부분은 잘림 */
+  border-radius: 14px;
+  display: block;
+}
+
+.similarTitle {
+  margin-top: 0.5rem;
+  font-size: 1.4rem;
+  color: #fff;
+  text-align: center;
+  font-weight: 600;
+  white-space: nowrap;
+  /* 한 줄로만 표시 */
+  overflow: hidden;
+  /* 넘치는 부분 숨김 */
+  text-overflow: ellipsis;
+  /* ...으로 표시 */
+  width: 100%;
+  /* 카드 너비에 맞춤 */
+  box-sizing: border-box;
+}
+
+
+/* 스틸컷 카드 */
+.stillcutCard {
+  height: 360px;
+  width: 360px;
+  min-width: 360px;
+  background: #222;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.10);
+  margin-bottom: 6px;
+}
+
+.stillcutImg {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+  background: #444;
+}
+
+.castSliderWrapper {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.castNavBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  z-index: 4;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.castNavBtn img {
+  width: 2rem;
+  height: 2rem;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.castNavBtn img:hover {
+  opacity: 1;
+}
+
+.castNavBtn.left {
+  left: 0.4rem;
+}
+
+.castNavBtn.right {
+  right: 0.4rem;
+}
+
+
+.castInfoWithBorder {
+  position: relative;
+}
+
+.castInfoWithBorder::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: #414141;
+  bottom: -25px;
+  border-radius: 0;
+}
+
+.commentGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px 18px;
+  margin: 0 70px 32px 70px;
+}

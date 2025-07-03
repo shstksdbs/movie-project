@@ -18,11 +18,11 @@ export default function Header() {
 
   // 디버깅: 사용자 상태와 로딩 상태 추적
   useEffect(() => {
-    console.log('Header 렌더링 상태:', { 
-      isLoading, 
+    console.log('Header 렌더링 상태:', {
+      isLoading,
       user: user ? `로그인됨 (${user.nickname})` : '로그아웃됨',
       showProfileMenu,
-      menuVisible 
+      menuVisible
     });
   }, [isLoading, user, showProfileMenu, menuVisible]);
 
@@ -88,7 +88,9 @@ export default function Header() {
     <header className={`${styles.stickyHeader} ${showSearchModal ? styles.activeSearch : ''}`}>
       <div className={styles.headerContent}>
         <div className={styles.inner}>
-          <Link to="/" className={styles.logo}>
+          <Link to="/" className={styles.logo}
+            onClick={() => setShowSearchModal(false)}
+          >
             <img src={logo} alt="Filmer" />
           </Link>
           <nav className={styles.nav}>

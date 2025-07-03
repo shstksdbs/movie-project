@@ -16,6 +16,7 @@
   display: flex;
   align-items: center;
   gap: var(--card-gap);
+  flex-direction: row;
   transition: transform 0.4s;
 }
 
@@ -27,7 +28,7 @@
 /* 좌우 버튼 */
 .navBtn {
   position: absolute;
-  top: calc(var(--poster-height) / 2);
+  top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;

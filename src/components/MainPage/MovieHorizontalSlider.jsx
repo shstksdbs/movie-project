@@ -13,10 +13,25 @@ const dummyMovies = Array.from({ length: 20 }, (_, i) => ({
   audience: '24만',
 }));
 
-export default function MovieHorizontalSlider({ data, sectionKey, ratings, actorInfo }) {
+export default function MovieHorizontalSlider({ data, sectionKey, ratings, actorInfo, CardComponent }) {
   function remToPx(rem) {
     return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
   }
+
+  const getNavBtnTop = () => {
+    switch (sectionKey) {
+      case 'person':
+        return '200px';    // 출연/제작
+      case 'comment':
+        return '125px';    // 코멘트
+      case 'similar':
+      case 'stillcut':
+        return '180px';    // 비슷한 작품, 스틸컷
+      default:
+        return '50%';      // 기본값
+    }
+  };
+
   const [start, setStart] = React.useState(0);
   const rootStyle = getComputedStyle(document.documentElement);
   const cardWidth = parseFloat(rootStyle.getPropertyValue('--card-width')) || 240;
@@ -30,11 +45,15 @@ export default function MovieHorizontalSlider({ data, sectionKey, ratings, actor
   const prev = () => setStart(Math.max(0, start - visible));
   const next = () => setStart(Math.min(movies.length - visible, start + visible));
 
+  // 카드 컴포넌트 결정
+  const Card = CardComponent || MovieCard;
+
   return (
     <div className={styles.sliderWrapper}>
       {start > 0 && (
         <button
           className={`${styles.navBtn} ${styles.left}`}
+          style={{ top: getNavBtnTop() }}
           onClick={prev}
         >
           <img src={previousIcon} alt="이전" />
@@ -48,12 +67,17 @@ export default function MovieHorizontalSlider({ data, sectionKey, ratings, actor
         }}
       >
         {movies.map((movie, idx) => (
-          <MovieCard
+          <Card
             key={movie.movieCd || movie.id || idx}
-            movie={{ ...movie, averageRating: ratings?.[movie.movieCd] }}
+            {...(sectionKey === 'person' ? { person: movie } :
+              sectionKey === 'comment' ? { comment: movie } :
+                sectionKey === 'similar' ? { movie } :
+                  sectionKey === 'stillcut' ? { still: movie } :
+                    { movie })}
             index={idx + 1}
             sectionKey={sectionKey}
             actorInfo={sectionKey === 'actor' ? actorInfo : undefined}
+            ratings={ratings}
           />
         ))}
       </div>

@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import styles from './SearchModal.module.css';
 import searchIcon from '../../assets/search_icon.png';
+import closeIcon from '../../assets/close_icon.png';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-const dummyPopular = [
-  '진격의 거인',
-  '월드 오브 스트릿 우먼 파이터',
-  '지치고 볶는 여행',
-  '내 아이의 사생활',
-  '짱구는 못말려 24',
-  '언니네 산지직송2',
-  '성적을 부탁해 : 티처스 2',
-  '미지의 서울',
-  '뭉쳐야 찬다 4',
-  '명탐정 코난 Part2 (더빙)'
-];
+import axios from 'axios';
 
 export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
   const [search, setSearch] = useState('');
-  const recentSearches = [];
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [popularKeywords, setPopularKeywords] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,14 +28,56 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
     return `${yyyy}.${MM}.${dd} ${ampm} ${String(hour).padStart(2, '0')}:${min} 기준`;
   }
 
+  // 최근 검색어 불러오기
+  useEffect(() => {
+    axios.get('http://localhost:80/api/search-history', { withCredentials: true })
+      .then(res => setRecentSearches(res.data))
+      .catch(() => setRecentSearches([]));
+  }, []);
+
+  // 인기 검색어 불러오기
+  useEffect(() => {
+    setLoading(true);
+    axios.get('http://localhost:80/api/popular-keywords', { withCredentials: true })
+      .then(res => {
+        setPopularKeywords(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('인기 검색어 조회 실패:', err);
+        setPopularKeywords([]);
+        setLoading(false);
+      });
+  }, []);
+
   const handleSearch = () => {
     if (search.trim()) {
+      // 검색어 저장
+      axios.post('http://localhost:80/api/search-history', null, {
+        params: { keyword: search, searchResultCount: 0 },
+        withCredentials: true
+      }).then(() => {
+        // 저장 후 최근 검색어 다시 불러오기
+        return axios.get('http://localhost:80/api/search-history', { withCredentials: true });
+      }).then(res => setRecentSearches(res.data))
+        .catch(() => {});
+      // 검색 결과 페이지로 이동
       navigate(`/search?query=${encodeURIComponent(search)}`);
     }
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleSearch();
+  };
+
+  // 개별 검색어 삭제
+  const handleDelete = (keyword) => {
+    axios.delete('http://localhost:80/api/search-history', {
+      params: { keyword },
+      withCredentials: true
+    })
+      .then(() => setRecentSearches(prev => prev.filter(item => item.keyword !== keyword)))
+      .catch(() => {});
   };
 
   useEffect(() => {
@@ -75,18 +108,67 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
               <div className={styles.empty}>검색 내역이 없습니다.</div>
             ) : (
               <ul>
-                {recentSearches.map((item, i) => <li key={i}>{item}</li>)}
+                {recentSearches.map((item, i) => (
+                  <li key={i} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                    <span
+                      style={{cursor: 'pointer'}}
+                      onClick={() => {
+                        setSearch(item.keyword);
+                        // 바로 검색 실행
+                        axios.post('http://localhost:80/api/search-history', null, {
+                          params: { keyword: item.keyword, searchResultCount: 0 },
+                          withCredentials: true
+                        }).then(() => {
+                          return axios.get('http://localhost:80/api/search-history', { withCredentials: true });
+                        }).then(res => setRecentSearches(res.data))
+                          .catch(() => {});
+                        navigate(`/search?query=${encodeURIComponent(item.keyword)}`);
+                        onClose && onClose(); // 모달 닫기
+                      }}
+                    >
+                      {item.keyword}
+                    </span>
+                    <button onClick={() => handleDelete(item.keyword)} className="deleteBtn" aria-label="검색어 삭제">
+                      <img src={closeIcon} alt="삭제" className="deleteIcon" />
+                    </button>
+                  </li>
+                ))}
               </ul>
             )}
           </div>
           <div className={styles.verticalDivider}></div>
           <div className={styles.right}>
             <div className={styles.title}>실시간 인기 검색어</div>
-            <ol className={styles.popularList}>
-              {dummyPopular.map((item, i) => (
-                <li key={i}><span className={styles.rank}>{i+1}</span> {item}</li>
-              ))}
-            </ol>
+            {loading ? (
+              <div className={styles.loading}>로딩 중...</div>
+            ) : popularKeywords.length === 0 ? (
+              <div className={styles.empty}>인기 검색어가 없습니다.</div>
+            ) : (
+              <ol className={styles.popularList}>
+                {popularKeywords.map((item, i) => (
+                  <li key={i}>
+                    <span className={styles.rank}>{i+1}</span> 
+                    <span 
+                      style={{cursor: 'pointer'}}
+                      onClick={() => {
+                        setSearch(item.keyword);
+                        // 바로 검색 실행
+                        axios.post('http://localhost:80/api/search-history', null, {
+                          params: { keyword: item.keyword, searchResultCount: 0 },
+                          withCredentials: true
+                        }).then(() => {
+                          return axios.get('http://localhost:80/api/search-history', { withCredentials: true });
+                        }).then(res => setRecentSearches(res.data))
+                          .catch(() => {});
+                        navigate(`/search?query=${encodeURIComponent(item.keyword)}`);
+                      }}
+                    >
+                      {item.keyword}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
             <div className={styles.timeStandard}>{getKoreanTimeString()}</div>
           </div>
         </div>
