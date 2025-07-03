@@ -31,7 +31,14 @@ export default function LoginPage() {
   };
 
   const handleSocialLogin = (provider) => {
-    window.location.href = `http://localhost/oauth2/authorization/${provider}`;
+    console.log(`${provider} 소셜 로그인 시작`);
+    // 캐시를 무시하고 새로운 OAuth 요청을 보내기 위해 타임스탬프 추가
+    const timestamp = new Date().getTime();
+    const oauthUrl = `http://localhost/oauth2/authorization/${provider}?t=${timestamp}`;
+    console.log('OAuth URL:', oauthUrl);
+    
+    // 브라우저 캐시를 완전히 무시하기 위해 새 창에서 열기
+    window.open(oauthUrl, '_self');
   };
 
   return (

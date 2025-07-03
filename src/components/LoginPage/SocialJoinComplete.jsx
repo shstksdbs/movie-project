@@ -9,6 +9,7 @@ import nextIcon from '../../assets/next.png';
 import TermsModal from '../Modal/TermsModal';
 import PrivacyModal from '../Modal/PrivacyModal';
 import { useUser } from '../../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function FilmerExtraInfoPage() {
@@ -22,6 +23,8 @@ export default function FilmerExtraInfoPage() {
     agreeTerms: false,
     agreePrivacy: false
   });
+
+  const navigate = useNavigate();
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
@@ -117,13 +120,13 @@ export default function FilmerExtraInfoPage() {
             if (currentUserData.success && currentUserData.user) {
               setUser(currentUserData.user);
               localStorage.setItem('user', JSON.stringify(currentUserData.user));
+              localStorage.setItem('autoLogin', 'true');
+              setTimeout(() => {
+                navigate('/');
+              }, 100);
             }
           });
-        // 성공 처리 (예: 알림, 리다이렉트 등)
         toast.success(data.message || "소셜 회원가입이 완료되었습니다!");
-        setTimeout(() => {
-          window.location.href = '/'; // 로그인 페이지로 이동 등
-        }, 1500);
       } else {
         toast.error(data.message || "회원가입에 실패했습니다.");
       }

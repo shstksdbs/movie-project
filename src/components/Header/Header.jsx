@@ -9,12 +9,22 @@ import SearchModal from '../Modal/SearchModal';
 import closeIcon from '../../assets/close_icon.png';
 
 export default function Header() {
-  const { user, setUser } = useUser();
+  const { user, setUser, isLoading } = useUser();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const menuTimeout = useRef(null);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const location = useLocation();
+
+  // 디버깅: 사용자 상태와 로딩 상태 추적
+  useEffect(() => {
+    console.log('Header 렌더링 상태:', { 
+      isLoading, 
+      user: user ? `로그인됨 (${user.nickname})` : '로그아웃됨',
+      showProfileMenu,
+      menuVisible 
+    });
+  }, [isLoading, user, showProfileMenu, menuVisible]);
 
   useEffect(() => {
     setShowProfileMenu(false);
@@ -23,13 +33,16 @@ export default function Header() {
 
   //로그아웃
   const handleLogout = async () => {
+    console.log('로그아웃 시작');
     try {
       const response = await fetch('http://localhost:80/api/logout', {
         method: 'POST',
         credentials: 'include', // 세션/쿠키 인증 시 필요
       });
       const data = await response.json();
+      console.log('로그아웃 응답:', data);
       if (response.ok && data.success) {
+        console.log('로그아웃 성공, 사용자 상태 초기화');
         setUser(null); // Context에서 유저 정보 제거(로그아웃)
         // 필요하다면 로그아웃 후 메인 페이지로 이동
         // navigate('/');
@@ -40,6 +53,7 @@ export default function Header() {
         alert(data.message || '로그아웃에 실패했습니다.');
       }
     } catch (error) {
+      console.error('로그아웃 오류:', error);
       alert('서버 오류가 발생했습니다.');
     }
   };
@@ -64,6 +78,11 @@ export default function Header() {
       if (menuTimeout.current) clearTimeout(menuTimeout.current);
     };
   }, []);
+
+  // 로딩 중에는 헤더를 렌더링하지 않음
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <header className={`${styles.stickyHeader} ${showSearchModal ? styles.activeSearch : ''}`}>

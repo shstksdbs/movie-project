@@ -26,17 +26,17 @@ export default function MainPage() {
         setBoxOfficeData(movies);
 
         // 각 영화별로 별점 fetch
-        movies.forEach(movie => {
-          fetch(`http://localhost:80/api/ratings/movie/${movie.movieCd}/average`)
-            .then(res => res.json())
-            .then(ratingData => {
-              //console.log('별점 응답:', movie.movieNm, ratingData);
-              setRatings(prev => ({
-                ...prev,
-                [movie.movieCd]: ratingData.averageRating
-              }));
-            });
-        });
+        // movies.forEach(movie => {
+        //   fetch(`http://localhost:80/api/ratings/movie/${movie.movieCd}/average`)
+        //     .then(res => res.json())
+        //     .then(ratingData => {
+        //       //console.log('별점 응답:', movie.movieNm, ratingData);
+        //       setRatings(prev => ({
+        //         ...prev,
+        //         [movie.movieCd]: ratingData.averageRating
+        //       }));
+        //     });
+        // });
       });
 
     // 인기영화 fetch
@@ -47,17 +47,17 @@ export default function MainPage() {
         setPopularMovies(movies);
         //console.log('인기영화 API 응답:', data);
         // 각 영화별로 별점 fetch
-        movies.forEach(movie => {
-          fetch(`http://localhost:80/api/ratings/movie/${movie.movieCd}/average`)
-            .then(res => res.json())
-            .then(ratingData => {
-              //console.log('별점 응답:', movie.movieNm, ratingData);
-              setPopularRatings(prev => ({
-                ...prev,
-                [movie.movieCd]: ratingData.averageRating
-              }));
-            });
-        });
+        // movies.forEach(movie => {
+        //   fetch(`http://localhost:80/api/ratings/movie/${movie.movieCd}/average`)
+        //     .then(res => res.json())
+        //     .then(ratingData => {
+        //       //console.log('별점 응답:', movie.movieNm, ratingData);
+        //       setPopularRatings(prev => ({
+        //         ...prev,
+        //         [movie.movieCd]: ratingData.averageRating
+        //       }));
+        //     });
+        // });
       });
 
     fetch('http://localhost:80/data/api/movies/coming-soon?page=0&size=20')
