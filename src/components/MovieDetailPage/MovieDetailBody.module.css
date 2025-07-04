@@ -11,28 +11,38 @@ section {
 
 h2 {
   color: #fff;
-  font-size: 1.5rem;
-  margin-left: 80px;
+  font-size: 1.7rem;
+  margin-left: 70px;
   margin-bottom: 18px;
   font-weight: 700;
   padding-left: 12px;
 }
 
+.castSliderWrapper {
+  position: relative;
+  width: 100%;
+  /* min-height: auto;  // 완전히 제거 */
+  /* height: auto;      // 필요 없다면 제거 */
+  display: flex;
+  align-items: stretch; /* stretch로 변경 */
+  overflow: hidden;
+
+}
+
 .castSliderTrack {
   display: flex;
-  width: 100%;
-  gap: 140px;
+  width: 98%;
+  transition: transform 0.5s;
+  align-items: stretch; /* stretch로 변경 */
 }
 
 .castGrid {
-  min-width: 1780px;
+  min-width: 100%;
+  /* 한 번에 하나만 보이게 */
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  /* 4명씩 한 줄 */
   gap: 32px 10px;
-  /* 줄 간격, 칸 간격 */
-  
-  margin: 30px 0;
   transition: none;
   will-change: auto;
 }
@@ -41,20 +51,20 @@ h2 {
   display: flex;
   align-items: center;
   background: none;
-  padding: 12px 18px;
+  padding: 12px 0px;
   color: #fff;
   gap: 16px;
 }
 
 .castImg {
-  width: 3rem;
-  height: 3rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 8px;
   object-fit: cover;
 }
 
 .castInfo {
-  width: 100%;
+  width: 60%;
   display: flex;
   flex-direction: column;
 }
@@ -76,7 +86,7 @@ h2 {
 /* 코멘트 카드 */
 .commentCard {
   width: 400px;
-  height: 250px;
+  height: 300px;
   min-width: 220px;
   background: #292929;
   border-radius: 14px;
@@ -176,9 +186,9 @@ h2 {
 
 /* 스틸컷 카드 */
 .stillcutCard {
-  height: 360px;
-  width: 360px;
-  min-width: 360px;
+  height: 534px;
+  width: 1280px;
+  min-width: 1280px;
   background: #222;
   border-radius: 12px;
   display: flex;
@@ -190,21 +200,12 @@ h2 {
 }
 
 .stillcutImg {
+  aspect-ratio: 2.39 / 1;
   width: 100%;
-  height: 110px;
   object-fit: cover;
   border-radius: 12px;
   display: block;
   background: #444;
-}
-
-.castSliderWrapper {
-  position: relative;
-  width: 100%;
-  min-height: 300px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
 }
 
 .castNavBtn {
@@ -263,4 +264,46 @@ h2 {
   grid-template-columns: repeat(4, 1fr);
   gap: 24px 18px;
   margin: 0 70px 32px 70px;
+}
+
+.StillsliderWrapper {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+  margin-left: 70px;
+}
+
+/* 좌우 버튼 */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  z-index: 40;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navBtn img {
+  width: 2rem;
+  height: 2rem;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.navBtn:hover img {
+  opacity: 1;
+}
+
+.left {
+  left: -4rem;
+}
+
+.right {
+  right: 5rem;
 }

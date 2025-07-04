@@ -28,7 +28,7 @@
 /* 좌우 버튼 */
 .navBtn {
   position: absolute;
-  top: 50%;
+  top: calc(var(--poster-height) /2);
   transform: translateY(-50%);
   background: none;
   border: none;

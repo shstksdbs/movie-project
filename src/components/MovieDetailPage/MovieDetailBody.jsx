@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import MovieHorizontalSlider from '../MainPage/MovieHorizontalSlider';
 import styles from './MovieDetailBody.module.css';
 // assets 이미지 import
 import banner1 from '../../assets/banner1.jpg';
@@ -10,33 +9,8 @@ import userIcon from '../../assets/user_icon.png';
 import userProfile from '../../assets/user_profile.png';
 import previousIcon from '../../assets/previous_icon.png';
 import nextIcon from '../../assets/next_icon.png';
+import MovieHorizontalSlider from '../MainPage/MovieHorizontalSlider';
 
-const castList = [
-  { name: "이정재", role: "출연 | 성기훈", img: userIcon },
-  { name: "위하준", role: "출연 | 준호", img: userIcon },
-  { name: "박성훈", role: "출연 | 현주", img: userIcon },
-  { name: "송영창", role: "출연 | 백억남", img: userIcon },
-  { name: "이병헌", role: "출연 | 프론트맨", img: userIcon },
-  { name: "박규영", role: "출연 | 노을", img: userIcon },
-  { name: "양동근", role: "출연 | 웅식", img: userIcon },
-  { name: "이다윗", role: "출연 | 민수", img: userIcon },
-  { name: "임시완", role: "출연 | 명기", img: userIcon },
-  { name: "이진욱", role: "출연 | 경석", img: userIcon },
-  { name: "강애심", role: "출연 | 금자", img: userIcon },
-  { name: "노재원", role: "출연 | 남규", img: userIcon },
-  { name: "이정재", role: "출연 | 성기훈", img: userIcon },
-  { name: "위하준", role: "출연 | 준호", img: userIcon },
-  { name: "박성훈", role: "출연 | 현주", img: userIcon },
-  { name: "송영창", role: "출연 | 백억남", img: userIcon },
-  { name: "이병헌", role: "출연 | 프론트맨", img: userIcon },
-  { name: "박규영", role: "출연 | 노을", img: userIcon },
-  { name: "양동근", role: "출연 | 웅식", img: userIcon },
-  { name: "이다윗", role: "출연 | 민수", img: userIcon },
-  { name: "임시완", role: "출연 | 명기", img: userIcon },
-  { name: "이진욱", role: "출연 | 경석", img: userIcon },
-  { name: "강애심", role: "출연 | 금자", img: userIcon },
-  { name: "노재원", role: "출연 | 남규", img: userIcon }
-];
 
 const dummySimilar = [
   { id: 1, title: '비슷한 영화 1', posterUrl: banner1 },
@@ -49,27 +23,8 @@ const dummySimilar = [
   { id: 8, title: '비슷한 영화 5', posterUrl: banner1 },
   { id: 9, title: '비슷한 영화 6', posterUrl: banner2 },
 ];
-const dummyStills = [
-  { id: 1, imageUrl: banner1 },
-  { id: 2, imageUrl: banner2 },
-  { id: 3, imageUrl: banner3 },
-  { id: 4, imageUrl: banner4 },
-  { id: 5, imageUrl: banner1 },
-  { id: 6, imageUrl: banner1 },
-  { id: 7, imageUrl: banner1 },
-  { id: 8, imageUrl: banner1 },
-];
 
-// 카드 컴포넌트들 (실제 파일 분리 가능)
-function PersonCard({ person }) {
-  return (
-    <div className={styles.personCard}>
-      <img src={person.photo} alt={person.name} className={styles.personPhoto} />
-      <div className={styles.personName}>{person.name}</div>
-      <div className={styles.personRole}>{person.role}</div>
-    </div>
-  );
-}
+
 function CommentCard({ comment }) {
   return (
     <div className={styles.commentCard}>
@@ -108,20 +63,40 @@ const commentList = [
 ];
 const displayedComments = commentList.slice(0, 8);
 
-export default function MovieDetailBody() {
-  // 슬라이더 상태 추가
+export default function MovieDetailBody({ actors, directors, stillcuts }) {
+
   const [castPage, setCastPage] = useState(0);
+
+  const directorList = (directors || []).map(d => ({
+    id: d.id,
+    peopleNm: d.peopleNm,
+    photoUrl: d.photoUrl && d.photoUrl.trim() !== '' ? d.photoUrl : userIcon,
+    cast: '감독',
+  }));
+  const actorList = (actors || []).map(a => ({
+    id: a.id,
+    peopleNm: a.peopleNm,
+    photoUrl: a.photoUrl && a.photoUrl.trim() !== '' ? a.photoUrl : userIcon,
+    cast: '출연',
+  }));
+  const castList = [...directorList, ...actorList];
+
+  // 슬라이더 세팅
   const castPerPage = 12; // 4x3
   const castTotalPage = Math.ceil(castList.length / castPerPage);
-  const castStartIdx = castPage * castPerPage;
-  const castEndIdx = castStartIdx + castPerPage;
-  const currentCastList = castList.slice(castStartIdx, castEndIdx);
-
-  // castList를 12명씩 페이지로 나누기
   const castPages = [];
   for (let i = 0; i < castTotalPage; i++) {
     castPages.push(castList.slice(i * castPerPage, (i + 1) * castPerPage));
   }
+
+  const [stillStart, setStillStart] = useState(0);
+  const stillVisible = 1; // 한 번에 1장씩
+  const stillcutsData = stillcuts || [];
+  const stillCardWidth = 1280; // 원하는 카드 width(px)로 맞추세요
+  const stillCardGap = 20;    // 카드 사이 gap(px)로 맞추세요
+
+  const handlePrev = () => setStillStart(Math.max(0, stillStart - 1));
+  const handleNext = () => setStillStart(Math.min(stillcutsData.length - stillVisible, stillStart + 1));
 
   return (
     <div className={styles.detailBody}>
@@ -144,18 +119,16 @@ export default function MovieDetailBody() {
                   const isFirstOrSecondRow = rowIdx === 0 || rowIdx === 1;
                   return (
                     <div
-                      className={
-                        styles.castCard
-                      }
-                      key={idx}
+                      className={styles.castCard}
+                      key={person.id || idx}
                     >
-                      <img src={person.img} alt={person.name} className={styles.castImg} />
+                      <img src={person.photoUrl} alt={person.peopleNm} className={styles.castImg} />
                       <div className={
                         styles.castInfo +
                         (isFirstOrSecondRow ? ' ' + styles.castInfoWithBorder : '')
                       }>
-                        <div className={styles.castName}>{person.name}</div>
-                        <div className={styles.castRole}>{person.role}</div>
+                        <div className={styles.castName}>{person.peopleNm}</div>
+                        <div className={styles.castRole}>{person.cast}</div>
                       </div>
                     </div>
                   );
@@ -174,29 +147,63 @@ export default function MovieDetailBody() {
         <h2>코멘트</h2>
         <div className={styles.commentGrid}>
           {displayedComments.map((comment, idx) => (
-            <CommentCard comment={comment} key={idx} />
+            <div className={styles.commentCard} key={idx}>
+              <div className={styles.commentUser}>{comment.user}</div>
+              <div className={styles.commentContent}>{comment.content}</div>
+              <div className={styles.commentDate}>{comment.date}</div>
+            </div>
           ))}
         </div>
       </section>
       <section>
-        <h2>비슷한 작품</h2>
+        <h2>비슷한 장르의 영화</h2>
         <MovieHorizontalSlider
           data={dummySimilar}
           sectionKey="similar"
-          ratings={null}
-          actorInfo={null}
           CardComponent={SimilarMovieCard}
         />
       </section>
       <section>
         <h2>스틸컷</h2>
-        <MovieHorizontalSlider
-          data={dummyStills}
-          sectionKey="stillcut"
-          ratings={null}
-          actorInfo={null}
-          CardComponent={StillcutCard}
-        />
+        <div className={styles.StillsliderWrapper}>
+          {stillStart > 0 && (
+            <button
+              className={`${styles.navBtn} ${styles.left}`}
+              onClick={handlePrev}
+            >
+              <img src={previousIcon} alt="이전" />
+            </button>
+          )}
+          <div
+            className={styles.slider}
+            style={{
+              display: 'flex',
+              transition: 'transform 0.4s',
+              transform: `translateX(-${stillStart * (stillCardWidth + stillCardGap)}px)`
+            }}
+          >
+            {stillcutsData.map((still, idx) => (
+              <div
+                className={styles.stillcutCard}
+                key={still.id || idx}
+                style={{
+                  flex: `0 0 ${stillCardWidth}px`,
+                  marginRight: idx !== stillcutsData.length - 1 ? `${stillCardGap}px` : 0
+                }}
+              >
+                <img src={still.imageUrl} alt="스틸컷" className={styles.stillcutImg} />
+              </div>
+            ))}
+          </div>
+          {stillStart + stillVisible < stillcutsData.length && (
+            <button
+              className={`${styles.navBtn} ${styles.right}`}
+              onClick={handleNext}
+            >
+              <img src={nextIcon} alt="다음" />
+            </button>
+          )}
+        </div>
       </section>
     </div>
   );

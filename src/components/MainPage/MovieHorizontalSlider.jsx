@@ -72,8 +72,7 @@ export default function MovieHorizontalSlider({ data, sectionKey, ratings, actor
             {...(sectionKey === 'person' ? { person: movie } :
               sectionKey === 'comment' ? { comment: movie } :
                 sectionKey === 'similar' ? { movie } :
-                  sectionKey === 'stillcut' ? { still: movie } :
-                    { movie })}
+                  { movie })}
             index={idx + 1}
             sectionKey={sectionKey}
             actorInfo={sectionKey === 'actor' ? actorInfo : undefined}

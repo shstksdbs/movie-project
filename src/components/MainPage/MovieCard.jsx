@@ -1,7 +1,9 @@
 import React from 'react';
 import styles from './MovieCard.module.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpenDt = true }) {
+  const navigate = useNavigate();
   function getDDay(openDt) {
     if (!openDt) return null;
     const today = new Date();
@@ -14,10 +16,17 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
     return `D-${diff}`;
   }
 
+  // 카드 클릭 핸들러
+  const handleCardClick = () => {
+    if (movie.movieCd) {
+      navigate(`/movie-detail/${movie.movieCd}`);
+    }
+  };
+
   // 인기영화 섹션이면 제목과 별점만 표시
   if (sectionKey === 'popular') {
     return (
-      <div className={styles.card}>
+      <div className={styles.card} onClick={handleCardClick} style={{ cursor: movie.movieCd ? 'pointer' : 'default' }}>
         <div className={styles.poster} style={{ position: 'relative' }}>
           <span className={styles.posterRank}>{index}</span>
           {movie.posterUrl && (
@@ -41,7 +50,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
   // 개봉예정영화 섹션
   if (sectionKey === 'upcoming') {
     return (
-      <div className={styles.card} style={{ position: 'relative' }}>
+      <div className={styles.card} style={{ position: 'relative', cursor: movie.movieCd ? 'pointer' : 'default' }} onClick={handleCardClick}>
         {/* D-day 뱃지 */}
         {movie.openDt && getDDay(movie.openDt) && (
           <div className={styles.dDayBadge}>{getDDay(movie.openDt)}</div>
@@ -68,7 +77,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
   // 배우 출연 영화 섹션이면 배우 정보와 대표작 표시
   if (sectionKey === 'actor' || sectionKey === 'director') {
     return (
-      <div className={styles.card}>
+      <div className={styles.card} onClick={handleCardClick} style={{ cursor: movie.movieCd ? 'pointer' : 'default' }}>
         {/* 배우 정보 표시 */}
         
         <div className={styles.poster} style={{ position: 'relative' }}>
@@ -99,7 +108,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
 
   if (sectionKey === 'boxoffice') {
     return (
-      <div className={styles.card}>
+      <div className={styles.card} onClick={handleCardClick} style={{ cursor: movie.movieCd ? 'pointer' : 'default' }}>
       <div className={styles.poster} style={{ position: 'relative' }}>
       <span className={styles.posterRank}>{index}</span>
         {movie.posterUrl && (
@@ -129,7 +138,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
   }
   // 그 외 섹션은 기존 정보 모두 표시
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={handleCardClick} style={{ cursor: movie.movieCd ? 'pointer' : 'default' }}>
       <div className={styles.poster} style={{ position: 'relative' }}>
    
         {movie.posterUrl && (

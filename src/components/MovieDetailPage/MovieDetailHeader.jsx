@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './MovieDetailHeader.module.css';
 
 
@@ -16,36 +16,41 @@ import starHalf from '../../assets/star_half.svg';
 import starEmpty from '../../assets/star_empty.svg';
 
 
-const summaryText = `수백년간 전설로 이어져온 바이킹과 드래곤의 전쟁! 드래곤을 죽여야만 진정한 전사가 될 수 있다는 신념을 가진 '히컵'은 어느 날 숲 속에서 총에 맞아 추락한 이빨도 없는 검은 드래곤과 운명적으로 만나게 되는데...
-수백년간 전설로 이어져온 바이킹과 드래곤의 전쟁! 드래곤을 죽여야만 진정한 전사가 될 수 있다는 신념을 가진 '히컵'은 어느 날 숲 속에서 총에 맞아 추락한 이빨도 없는 검은 드래곤과 운명적으로 만나게 되는데...
-수백년간 전설로 이어져온 바이킹과 드래곤의 전쟁! 드래곤을 죽여야만 진정한 전사가 될 수 있다는 신념을 가진 '히컵'은 어느 날 숲 속에서 총에 맞아 추락한 이빨도 없는 검은 드래곤과 운명적으로 만나게 되는데...`;
-
-const MovieDetailHeader = () => {
+const MovieDetailHeader = ({ movieDetail }) => {
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [showMore, setShowMore] = useState(false);
     const [userRating, setUserRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [plusHover, setPlusHover] = useState(false);
     const [commentHover, setCommentHover] = useState(false);
     const [shareHover, setShareHover] = useState(false);
+    const [isOverflow, setIsOverflow] = useState(false);
+    const summaryRef = useRef(null);
 
-    // 줄거리 전체 반환 (CSS로 3줄 제한)
-    const getSummary = () => summaryText;
+    useEffect(() => {
+        if (summaryRef.current) {
+            // 실제로 3줄을 넘는지 체크
+            const el = summaryRef.current;
+            setIsOverflow(el.scrollHeight > el.clientHeight + 1); // 약간의 오차 허용
+        }
+    }, [movieDetail?.description]);
 
     return (
         <>
             <div className={styles.headerWrap}>
                 <div className={styles.headerLeft}>
                     <h1 className={styles.title}>
-                        드래곤 길들이기 <span className={styles.rating}>★ 3.8</span>
+                        {movieDetail.movieNm} <span className={styles.rating}>★ {movieDetail.rating}</span>
                     </h1>
                     <div className={styles.info}>
-                        <span>2025</span> · <span>모험/판타지/애니메이션</span> · <span>미국, 영국</span>
+                        <span>{movieDetail.openDt}</span> · <span>{movieDetail.genreNm}</span>
                     </div>
                     <div className={styles.meta}>
-                        <span>125분</span> · <span>전체 이용가</span>
+                        <span>{movieDetail.showTm}분</span> · <span>{movieDetail.watchGradeNm}</span>
                     </div>
                     <div className={styles.stats}>
-                        <span>예매 순위 2위(4.6%)</span> · <span>누적 관객 130.8만명</span>
+                        <span>예매 순위 {movieDetail.rank}위</span><span>({movieDetail.reservationRate})</span> · <span>누적 관객 {movieDetail.audienceCount}</span>
                     </div>
                     <div className={styles.userRating}>
                         <span>평가하기</span>
@@ -121,31 +126,38 @@ const MovieDetailHeader = () => {
                         </div>
                     </div>
                     <div className={styles.summaryWrap}>
-                        <span className={styles.summaryPreview}>
-                            {summaryText.slice(0, 120)}
-                            {summaryText.length > 120 && '...'}
-                        </span>
-                        {summaryText.length > 120 && showMore && (
-                            <span className={styles.summaryMore}>
-                                {summaryText.slice(120)}
+                        {/* showMore가 false일 때만 미리보기(3줄) */}
+                        {!showMore && (
+                            <span
+                                className={styles.summaryPreview}
+                                ref={summaryRef}
+                            >
+                                {movieDetail.description}
                             </span>
                         )}
-                        {summaryText.length > 120 && !showMore && (
+                        {/* 더보기 버튼: 3줄 초과 + showMore가 false일 때만 */}
+                        {isOverflow && !showMore && (
                             <button className={styles.moreBtn} onClick={() => setShowMore(true)}>
                                 더보기
                                 <img src={moreIcon} alt="더보기 화살표" className={styles.moreIcon} />
                             </button>
                         )}
-                        {summaryText.length > 120 && showMore && (
-                            <button className={styles.closeBtn} onClick={() => setShowMore(false)}>
-                                닫기
-                                <img src={moreIcon} alt="닫기" className={styles.closeIcon} />
-                            </button>
+                        {/* showMore가 true일 때 전체 설명 */}
+                        {showMore && (
+                            <>
+                                <span className={styles.summaryMore}>
+                                    {movieDetail.description}
+                                </span>
+                                <button className={styles.closeBtn} onClick={() => setShowMore(false)}>
+                                    닫기
+                                    <img src={moreIcon} alt="닫기" className={styles.closeIcon} />
+                                </button>
+                            </>
                         )}
                     </div>
                 </div>
                 <div className={styles.headerRight}>
-                    <img src={posterImg} alt="영화 포스터" className={styles.posterImg} />
+                    <img src={movieDetail.posterUrl || posterImg} alt="영화 포스터" className={styles.posterImg} />
                 </div>
             </div>
             <hr className={styles.detailDivider} />

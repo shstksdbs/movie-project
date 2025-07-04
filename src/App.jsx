@@ -33,7 +33,7 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/" element={<MainPage />} />
             <Route path="/search" element={<SearchResultPage />} />
-            <Route path="/movie-detail" element={<MovieDetailPage />} />
+            <Route path="/movie-detail/:movieCd" element={<MovieDetailPage />} />
           </Routes>
         </DefaultLayout>
       </BrowserRouter>

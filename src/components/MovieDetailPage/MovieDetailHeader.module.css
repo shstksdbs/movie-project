@@ -138,9 +138,8 @@
     height: 3rem;
 }
 
-
 .summaryWrap {
-    width: 50%;
+    width: 47%;
     overflow: visible;
     max-height: none;
     align-self: flex-start;
@@ -149,7 +148,7 @@
 .summaryPreview {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-
+    -webkit-line-clamp: 3;
     overflow: hidden;
     color: #e0e6ed;
     line-height: 1.6;
@@ -166,10 +165,7 @@
     animation: fadeIn 0.3s;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
+
 
 .moreBtn {
     background: none;
