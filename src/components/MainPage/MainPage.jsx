@@ -23,10 +23,11 @@ export default function MainPage() {
       .then(res => res.json())
       .then(data => {
         const movies = data.data || [];
-        setBoxOfficeData(movies);
-
-        // 각 영화별로 별점 fetch
-        movies.forEach(movie => {
+        
+        // 각 영화별로 별점 fetch하고 영화 데이터에 포함
+        const moviesWithRatings = movies.map(movie => ({ ...movie }));
+        
+        movies.forEach((movie, index) => {
           fetch(`http://localhost:80/api/ratings/movie/${movie.movieCd}/average`, {
             credentials: 'include'
           })
@@ -37,8 +38,14 @@ export default function MainPage() {
                 ...prev,
                 [movie.movieCd]: ratingData.averageRating
               }));
+              
+              // 영화 데이터에 별점 정보 추가
+              moviesWithRatings[index].averageRating = ratingData.averageRating;
+              setBoxOfficeData([...moviesWithRatings]);
             });
         });
+        
+        setBoxOfficeData(moviesWithRatings);
       });
 
     // 인기영화 fetch
@@ -46,22 +53,30 @@ export default function MainPage() {
       .then(res => res.json())
       .then(data => {
         const movies = data.data || [];
-        setPopularMovies(movies);
-        console.log('인기영화 API 응답:', data);
-        // 각 영화별로 별점 fetch
-        movies.forEach(movie => {
+        
+        // 각 영화별로 별점 fetch하고 영화 데이터에 포함
+        const moviesWithRatings = movies.map(movie => ({ ...movie }));
+        
+        //console.log('인기영화 API 응답:', data);
+        movies.forEach((movie, index) => {
           fetch(`http://localhost:80/api/ratings/movie/${movie.movieCd}/average`, {
             credentials: 'include'
           })
             .then(res => res.json())
             .then(ratingData => {
-              console.log('별점 응답:', movie.movieNm, ratingData);
+              //console.log('별점 응답:', movie.movieNm, ratingData);
               setPopularRatings(prev => ({
                 ...prev,
                 [movie.movieCd]: ratingData.averageRating
               }));
+              
+              // 영화 데이터에 별점 정보 추가
+              moviesWithRatings[index].averageRating = ratingData.averageRating;
+              setPopularMovies([...moviesWithRatings]);
             });
         });
+        
+        setPopularMovies(moviesWithRatings);
       });
 
     fetch('http://localhost:80/data/api/movies/coming-soon?page=0&size=20')
@@ -78,7 +93,19 @@ export default function MainPage() {
       .then(data => {
         if (data.success && data.data) {
           setActorInfo(data.data.actor); // 배우 정보
-          setActorMovies(data.data.topMovies || []); // 대표작 3개
+          const movies = data.data.topMovies || [];
+          
+          // 배우 추천 영화에 필요한 정보 추가
+          const enrichedMovies = movies.map(movie => ({
+            ...movie,
+            averageRating: movie.averageRating || 0.0,
+            description: movie.description || '',
+            showTm: movie.showTm || 0,
+            companyNm: movie.companyNm || '',
+            directorName: movie.directorName || ''
+          }));
+          
+          setActorMovies(enrichedMovies);
         }
       });
 
@@ -87,7 +114,19 @@ export default function MainPage() {
       .then(data => {
         if (data.success && data.data) {
           setDirectorInfo(data.data.director); // 감독 정보
-          setDirectorMovies(data.data.topMovies || []); // 대표작 3개
+          const movies = data.data.topMovies || [];
+          
+          // 감독 추천 영화에 필요한 정보 추가
+          const enrichedMovies = movies.map(movie => ({
+            ...movie,
+            averageRating: movie.averageRating || 0.0,
+            description: movie.description || '',
+            showTm: movie.showTm || 0,
+            companyNm: movie.companyNm || '',
+            directorName: movie.directorName || ''
+          }));
+          
+          setDirectorMovies(enrichedMovies);
         }
       });
 

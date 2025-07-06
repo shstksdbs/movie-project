@@ -19,7 +19,13 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
   // 카드 클릭 핸들러
   const handleCardClick = () => {
     if (movie.movieCd) {
-      navigate(`/movie-detail/${movie.movieCd}`);
+      // 모든 섹션에서 영화 데이터를 state로 전달
+      navigate(`/movie-detail/${movie.movieCd}`, { 
+        state: { 
+          movieData: movie,
+          sectionKey: sectionKey
+        } 
+      });
     }
   };
 
