@@ -23,29 +23,8 @@ export default function MainPage() {
       .then(res => res.json())
       .then(data => {
         const movies = data.data || [];
-        
-        // 각 영화별로 별점 fetch하고 영화 데이터에 포함
-        const moviesWithRatings = movies.map(movie => ({ ...movie }));
-        
-        movies.forEach((movie, index) => {
-          fetch(`http://localhost:80/api/ratings/movie/${movie.movieCd}/average`, {
-            credentials: 'include'
-          })
-            .then(res => res.json())
-            .then(ratingData => {
-              //console.log('별점 응답:', movie.movieNm, ratingData);
-              setRatings(prev => ({
-                ...prev,
-                [movie.movieCd]: ratingData.averageRating
-              }));
-              
-              // 영화 데이터에 별점 정보 추가
-              moviesWithRatings[index].averageRating = ratingData.averageRating;
-              setBoxOfficeData([...moviesWithRatings]);
-            });
-        });
-        
-        setBoxOfficeData(moviesWithRatings);
+        // 별점 정보가 이미 포함되어 있다면 바로 사용
+        setBoxOfficeData(movies);
       });
 
     // 인기영화 fetch
@@ -53,30 +32,8 @@ export default function MainPage() {
       .then(res => res.json())
       .then(data => {
         const movies = data.data || [];
-        
-        // 각 영화별로 별점 fetch하고 영화 데이터에 포함
-        const moviesWithRatings = movies.map(movie => ({ ...movie }));
-        
-        //console.log('인기영화 API 응답:', data);
-        movies.forEach((movie, index) => {
-          fetch(`http://localhost:80/api/ratings/movie/${movie.movieCd}/average`, {
-            credentials: 'include'
-          })
-            .then(res => res.json())
-            .then(ratingData => {
-              //console.log('별점 응답:', movie.movieNm, ratingData);
-              setPopularRatings(prev => ({
-                ...prev,
-                [movie.movieCd]: ratingData.averageRating
-              }));
-              
-              // 영화 데이터에 별점 정보 추가
-              moviesWithRatings[index].averageRating = ratingData.averageRating;
-              setPopularMovies([...moviesWithRatings]);
-            });
-        });
-        
-        setPopularMovies(moviesWithRatings);
+        // 별점 정보가 이미 포함되어 있다면 바로 사용
+        setPopularMovies(movies);
       });
 
     fetch('http://localhost:80/data/api/movies/coming-soon?page=0&size=20')

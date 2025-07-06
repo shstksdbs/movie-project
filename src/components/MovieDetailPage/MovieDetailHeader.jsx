@@ -41,7 +41,7 @@ const MovieDetailHeader = ({ movieDetail }) => {
             <div className={styles.headerWrap}>
                 <div className={styles.headerLeft}>
                     <h1 className={styles.title}>
-                        {movieDetail.movieNm} <span className={styles.rating}>★ {movieDetail.rating}</span>
+                        {movieDetail.movieNm} <span className={styles.rating}>★ {movieDetail.averageRating}</span>
                     </h1>
                     <div className={styles.info}>
                         <span>{movieDetail.openDt}</span> · <span>{movieDetail.genreNm}</span>

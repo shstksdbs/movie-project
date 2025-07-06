@@ -72,7 +72,7 @@ export default function SearchResultPage() {
       .then(([movieData, personData]) => {
         const movies = movieData.data || [];
         setMovies(movies);
-
+        console.log('영화 API 전체 응답:', movieData);
         // 인물 데이터 처리
         const peopleList = [];
         const peopleMap = {};

@@ -47,7 +47,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
         <div className={styles.ratingLine}>
           <span className={styles.star}>⭐</span>
           <span className={styles.rating}>
-            {movie.averageRating !== undefined && movie.averageRating !== null ? movie.averageRating : '-'}
+            {movie.averageRating ?? 0}
           </span>
         </div>
       </div>
@@ -105,7 +105,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
         <div className={styles.ratingLine}>
           <span className={styles.star}>⭐</span>
           <span className={styles.rating}>
-            {movie.averageRating !== undefined && movie.averageRating !== null ? movie.averageRating : '-'}
+            {movie.averageRating ?? 0}
           </span>
         </div>
       </div>
@@ -135,7 +135,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
       <div className={styles.ratingLine}>
         <span className={styles.star}>⭐</span>
         <span className={styles.rating}>
-          {movie.averageRating !== undefined && movie.averageRating !== null ? movie.averageRating : '-'}
+          {movie.averageRating ?? 0}
         </span>
       </div>
       <div className={styles.audience}>누적관객 {movie.audience || movie.audienceCount || '-'}</div>

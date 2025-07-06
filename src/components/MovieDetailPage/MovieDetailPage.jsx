@@ -20,13 +20,13 @@ export default function MovieDetailPage() {
     window.scrollTo(0, 0);
     // location state에서 영화 데이터 확인
     const { movieData, sectionKey } = location.state || {};
-    
+
     // 영화 데이터가 있는 경우 API 호출 생략
     if (movieData) {
       console.log('영화 데이터 사용:', movieData, '섹션:', sectionKey);
       setLoading(false);
-      
-      // 영화 데이터를 MovieDetail 형식으로 변환
+
+      // 감독/배우 정보가 있으면 그대로 사용, 없으면 기존 방식
       const transformedData = {
         movieCd: movieData.movieCd,
         movieNm: movieData.movieNm,
@@ -34,6 +34,8 @@ export default function MovieDetailPage() {
         openDt: movieData.openDt,
         genreNm: movieData.genreNm,
         nationNm: movieData.nationNm,
+        rank: movieData.rank,
+        reservationRate: movieData.reservationRate,
         watchGradeNm: movieData.watchGradeNm,
         posterUrl: movieData.posterUrl,
         status: movieData.status,
@@ -41,17 +43,20 @@ export default function MovieDetailPage() {
         showTm: movieData.showTm || 0,
         companyNm: movieData.companyNm || '',
         averageRating: movieData.averageRating || 0.0,
-        // 감독 정보 처리
-        directors: movieData.directorName ? [{ name: movieData.directorName }] : [],
-        // 섹션별로 다른 처리
-        actors: sectionKey === 'actor' || sectionKey === 'director' ? [] : [],
-        stillcuts: []
+        audienceCount: movieData.audienceCount || 0,
+        // 감독/배우 정보 우선 사용
+        directors: movieData.directors
+          ? movieData.directors
+          : (movieData.directorName
+            ? [{ id: 'director', peopleNm: movieData.directorName, photoUrl: movieData.directorPhotoUrl }]
+            : []),
+        actors: movieData.actors || (sectionKey === 'actor' || sectionKey === 'director' ? [] : []),
+        stillcuts: movieData.stillcuts || []
       };
-      
       setMovieDetail(transformedData);
       return;
     }
-    
+
     // 데이터가 없는 경우 (직접 URL 입력 등) 에러 처리
     setError('영화 정보를 찾을 수 없습니다. 메인 페이지에서 영화를 선택해주세요.');
     setLoading(false);
