@@ -57,8 +57,8 @@ h2 {
 }
 
 .castImg {
-  width: 4rem;
-  height: 4rem;
+  width: 5rem;
+  height: 5rem;
   border-radius: 8px;
   object-fit: cover;
 }
@@ -254,8 +254,8 @@ h2 {
   left: 0;
   right: 0;
   height: 1.5px;
-  background: #414141;
-  bottom: -25px;
+  background: #575757;
+  bottom: -30px;
   border-radius: 0;
 }
 
