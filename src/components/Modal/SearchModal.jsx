@@ -41,6 +41,7 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
     axios.get('http://localhost:80/api/popular-keywords', { withCredentials: true })
       .then(res => {
         setPopularKeywords(res.data);
+        console.log('인기 검색어:', res.data);
         setLoading(false);
       })
       .catch(err => {

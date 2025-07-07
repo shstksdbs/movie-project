@@ -82,8 +82,8 @@
 }
 
 .starImg {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.5rem !important;
+    height: 1.5rem !important;
     cursor: pointer;
     user-select: none;
     vertical-align: middle;

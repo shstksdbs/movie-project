@@ -138,7 +138,7 @@ export default function MovieCard({ movie, index, sectionKey, actorInfo, showOpe
           {movie.averageRating ?? 0}
         </span>
       </div>
-      <div className={styles.audience}>누적관객 {movie.audience || movie.audienceCount || '-'}</div>
+      <div className={styles.audience}>누적관객 {movie.audience || movie.formattedAudiAcc || '-'}</div>
     </div>
     );
   }

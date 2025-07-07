@@ -3,6 +3,7 @@ import styles from './SearchResultPage.module.css';
 import searchIcon from '../../assets/search_icon.png';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import MovieCard from '../MainPage/MovieCard';
+import axios from 'axios';
 
 function ActorCard({ actor }) {
   return (
@@ -56,6 +57,7 @@ export default function SearchResultPage() {
 
   useEffect(() => {
     if (!search) return;
+    window.scrollTo(0, 0);
     setLoading(true);
     setError(null);
     
@@ -114,6 +116,11 @@ export default function SearchResultPage() {
   const navigate = useNavigate();
   const handleSearch = () => {
     if (input.trim()) {
+      // 최근검색어 저장
+      axios.post('http://localhost:80/api/search-history', null, {
+        params: { keyword: input, searchResultCount: 0 },
+        withCredentials: true
+      }).catch(() => {});
       setSearch(input);
       navigate(`/search?query=${encodeURIComponent(input)}`);
     }
@@ -135,7 +142,7 @@ export default function SearchResultPage() {
         {(!loading && movies.length === 0) && <div>검색 결과가 없습니다.</div>}
         <div className={styles.cardList}>
           {movies.map((movie, idx) => (
-            <MovieCard key={movie.movieCd || idx} movie={movie} index={idx + 1} showOpenDt={false} />
+            <MovieCard key={movie.movieCd || idx} movie={movie} index={idx + 1} showOpenDt={false} sectionKey="search" />
           ))}
         </div>
       </div>

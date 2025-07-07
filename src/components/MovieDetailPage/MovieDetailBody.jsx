@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './MovieDetailBody.module.css';
 // assets 이미지 import
 import banner1 from '../../assets/banner1.jpg';
@@ -10,6 +10,14 @@ import userProfile from '../../assets/user_profile.png';
 import previousIcon from '../../assets/previous_icon.png';
 import nextIcon from '../../assets/next_icon.png';
 import MovieHorizontalSlider from '../MainPage/MovieHorizontalSlider';
+import likeIcon from '../../assets/like_icon.png';
+import likeIconTrue from '../../assets/like_icon_true.png';
+import commentIcon2 from '../../assets/comment_icon2.png';
+import shareIcon from '../../assets/share_icon.png';
+import ReplyModal from '../Modal/ReplyModal';
+import CommentDetailModal from '../Modal/CommentDetailModal';
+import { useUser } from '../../contexts/UserContext';
+import CommentModal from '../Modal/CommentModal';
 
 
 const dummySimilar = [
@@ -24,16 +32,6 @@ const dummySimilar = [
   { id: 9, title: '비슷한 영화 6', posterUrl: banner2 },
 ];
 
-
-function CommentCard({ comment }) {
-  return (
-    <div className={styles.commentCard}>
-      <div className={styles.commentUser}>{comment.user}</div>
-      <div className={styles.commentContent}>{comment.content}</div>
-      <div className={styles.commentDate}>{comment.date}</div>
-    </div>
-  );
-}
 function SimilarMovieCard({ movie }) {
   return (
     <div className={styles.similarMovieCard}>
@@ -50,22 +48,46 @@ function StillcutCard({ still }) {
   );
 }
 
-// (코멘트 데이터 예시, 실제 데이터로 대체)
-const commentList = [
-  { user: 'hooniss', content: '스포일러가 있어요!!보기', date: '2023-01-01' },
-  { user: '우진', content: '감독이 역겨운 선민의식에 휩싸여 있다...', date: '2023-01-02' },
-  { user: '난춘', content: '보는 내내 "아니?" "굳이?" "왜?"를 반복하게 만든다.', date: '2023-01-03' },
-  { user: '캡틴부메랑', content: '그러니까 내가 돈이 너무 많은데 인생이 재미가 없어서...', date: '2023-01-04' },
-  { user: '19', content: '스포일러가 있어요!!보기', date: '2023-01-05' },
-  { user: '김민재', content: '산산조각 난 아이디어, 오징어처럼 흐물흐물해진 완성도.', date: '2023-01-06' },
-  { user: '현석2', content: '우리 오징어게임 그정도 아닙니다.', date: '2023-01-07' },
-  { user: '강도인', content: '전편보다 낫다는 이야기를 듣고 보았다. 그렇지 않았다.', date: '2023-01-08' },
-];
-const displayedComments = commentList.slice(0, 8);
 
-export default function MovieDetailBody({ actors, directors, stillcuts }) {
+
+export default function MovieDetailBody({ actors, directors, stillcuts, movieCd, comments, commentLoading, commentError, fetchComments }) {
 
   const [castPage, setCastPage] = useState(0);
+  const [replyModalOpen, setReplyModalOpen] = useState(false);
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
+  const [commentDetailModalOpen, setCommentDetailModalOpen] = useState(false);
+  const [selectedComment, setSelectedComment] = useState(null);
+  const { user } = useUser();
+  // 수정 모달 상태
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState(null);
+
+  // 작성시간을 상대적 시간으로 변환하는 함수
+  const formatRelativeTime = (dateString) => {
+    if (!dateString) return '';
+    
+    const now = new Date();
+    const commentDate = new Date(dateString);
+    
+    // 날짜 차이 계산 (밀리초 단위)
+    const diffTime = now.getTime() - commentDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+      return '오늘';
+    } else if (diffDays === 1) {
+      return '어제';
+    } else if (diffDays < 7) {
+      return `${diffDays}일 전`;
+    } else {
+      // 7일 이상 지난 경우 원래 날짜 형식으로 표시
+      return commentDate.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+  };
 
   const directorList = (directors || []).map(d => ({
     id: d.id,
@@ -97,6 +119,92 @@ export default function MovieDetailBody({ actors, directors, stillcuts }) {
 
   const handlePrev = () => setStillStart(Math.max(0, stillStart - 1));
   const handleNext = () => setStillStart(Math.min(stillcutsData.length - stillVisible, stillStart + 1));
+
+  // 댓글 상세 모달 핸들러
+  const handleCommentCardClick = (reviewId) => {
+    const comment = comments.find(c => c.id === reviewId);
+    setSelectedReviewId(reviewId);
+    setSelectedComment(comment);
+    setCommentDetailModalOpen(true);
+  };
+  // 대댓글(Reply) 모달 핸들러
+  const handleReplyIconClick = (e, reviewId) => {
+    e.stopPropagation(); // commentCard 클릭 이벤트 버블링 방지
+    setSelectedReviewId(reviewId);
+    setReplyModalOpen(true);
+  };
+
+  
+
+  // 코멘트 삭제 핸들러
+  const handleDelete = (commentId) => {
+    if (window.confirm('정말 삭제하시겠습니까?')) {
+      fetch(`/api/reviews/${commentId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            fetchComments(); // 삭제 후 목록 갱신
+          } else {
+            alert('삭제 실패: ' + (data.message || ''));
+          }
+        })
+        .catch(() => alert('삭제 중 오류 발생'));
+    }
+  };
+
+  // 코멘트 수정 핸들러
+  const handleEdit = (comment) => {
+    setEditTarget(comment);
+    setEditModalOpen(true);
+  };
+
+  // 수정 완료 시
+  const handleEditSave = () => {
+    setEditModalOpen(false);
+    fetchComments();
+  };
+
+  // 좋아요 클릭 핸들러
+  const handleLike = async (commentId, likedByMe) => {
+    try {
+      let res;
+      if (likedByMe) {
+        // 좋아요 취소 (DELETE)
+        res = await fetch(`http://localhost:80/api/reviews/dto/${commentId}/like`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+      } else {
+        // 좋아요 (POST)
+        res = await fetch(`http://localhost:80/api/reviews/dto/${commentId}/like`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+      }
+      if (res.ok) {
+        fetchComments(); // 좋아요 상태 및 카운트 갱신
+      } else if (res.status === 401) {
+        alert('로그인이 필요합니다.');
+      } else {
+        alert('좋아요 처리 실패');
+      }
+    } catch (e) {
+      alert('네트워크 오류');
+    }
+  };
+
+  useEffect(() => {
+    if (!movieCd) return;
+    fetchComments();
+  }, [movieCd, fetchComments]);
+
+  // 대댓글 작성 후 코멘트 목록 새로고침
+  const handleReplySave = () => {
+    fetchComments();
+  };
 
   return (
     <div className={styles.detailBody}>
@@ -144,13 +252,62 @@ export default function MovieDetailBody({ actors, directors, stillcuts }) {
         </div>
       </section>
       <section>
-        <h2>코멘트</h2>
+        <div className={styles.commentSectionHeader}>
+          <h2 className={styles.commentSectionTitle}>코멘트</h2>
+          <span className={styles.commentSectionMore}>더보기</span>
+        </div>
         <div className={styles.commentGrid}>
-          {displayedComments.map((comment, idx) => (
-            <div className={styles.commentCard} key={idx}>
-              <div className={styles.commentUser}>{comment.user}</div>
+          {commentLoading && <div>로딩 중...</div>}
+          {commentError && <div style={{ color: 'red' }}>{commentError}</div>}
+          {!commentLoading && !commentError && comments.length === 0 && <div>아직 코멘트가 없습니다.</div>}
+          {comments.map((comment, idx) => (
+            <div
+              className={styles.commentCard}
+              key={comment.id || idx}
+              onClick={() => handleCommentCardClick(comment.id)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className={styles.commentHeader}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className={styles.commentUser}>{comment.userNickname || comment.user || '익명'}</span>
+                  <span className={styles.commentDate}>{formatRelativeTime(comment.updatedAt || comment.date)}</span>
+                </div>
+                <span className={styles.commentRating}>★ {comment.rating ? comment.rating.toFixed(1) : '-'}</span>
+              </div>
+              <hr className={styles.commentDivider} />
               <div className={styles.commentContent}>{comment.content}</div>
-              <div className={styles.commentDate}>{comment.date}</div>
+              <hr className={styles.commentFooterDivider} />
+              <div className={styles.commentFooter}>
+                <span>좋아요 {comment.likeCount ?? 0}</span>
+                <span>댓글 {comment.commentCount ?? 0}</span>
+                
+                {/* 👇 조건부 버튼 */}
+                {user && user.id === comment.userId && (
+                  <div className={styles.commentActions} onClick={e => e.stopPropagation()}>
+                    <button onClick={() => handleEdit(comment)}>수정</button>
+                    <button onClick={() => handleDelete(comment.id)}>삭제</button>
+                  </div>
+                )}
+              </div>
+              <div className={styles.commentIconRow}>
+                <img
+                  src={comment.likedByMe ? likeIconTrue : likeIcon}
+                  alt="좋아요"
+                  className={styles.commentIcon}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleLike(comment.id, comment.likedByMe);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                />
+                <img
+                  src={commentIcon2}
+                  alt="댓글"
+                  className={styles.commentIcon}
+                  onClick={e => handleReplyIconClick(e, comment.id)}
+                  style={{ cursor: 'pointer' }}
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -205,6 +362,36 @@ export default function MovieDetailBody({ actors, directors, stillcuts }) {
           )}
         </div>
       </section>
+
+      {/* 댓글 상세 모달 */}
+      <CommentDetailModal
+        open={commentDetailModalOpen}
+        onClose={() => setCommentDetailModalOpen(false)}
+        comment={selectedComment}
+        reviewId={selectedReviewId}
+        fetchComments={fetchComments}
+      />
+      {/* 코멘트 수정 모달 */}
+      <CommentModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        movieTitle={editTarget?.movieNm}
+        movieCd={editTarget?.movieCd}
+        editMode={true}
+        initialContent={editTarget?.content || ''}
+        initialRating={editTarget?.rating || 0}
+        onEditSave={handleEditSave}
+        reviewId={editTarget?.id}
+      />
+      {/* 대댓글 작성 모달(기존) */}
+      <ReplyModal
+        open={replyModalOpen}
+        onClose={() => setReplyModalOpen(false)}
+        reviewId={selectedReviewId}
+        parentId={null}
+        isReply={true}
+        onSave={handleReplySave}
+      />
     </div>
   );
 } 

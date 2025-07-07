@@ -23,6 +23,7 @@ export default function MainPage() {
       .then(res => res.json())
       .then(data => {
         const movies = data.data || [];
+        console.log('박스오피스 데이터:', movies);
         // 별점 정보가 이미 포함되어 있다면 바로 사용
         setBoxOfficeData(movies);
       });

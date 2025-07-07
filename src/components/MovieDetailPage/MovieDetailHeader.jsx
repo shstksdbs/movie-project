@@ -14,9 +14,10 @@ import posterImg from '../../assets/banner1.jpg'; // 임시 포스터 이미지
 import starFull from '../../assets/star_full.svg';
 import starHalf from '../../assets/star_half.svg';
 import starEmpty from '../../assets/star_empty.svg';
+import CommentModal from '../Modal/CommentModal';
 
 
-const MovieDetailHeader = ({ movieDetail }) => {
+const MovieDetailHeader = ({ movieDetail, onCommentSaved }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showMore, setShowMore] = useState(false);
@@ -26,6 +27,7 @@ const MovieDetailHeader = ({ movieDetail }) => {
     const [commentHover, setCommentHover] = useState(false);
     const [shareHover, setShareHover] = useState(false);
     const [isOverflow, setIsOverflow] = useState(false);
+    const [commentModalOpen, setCommentModalOpen] = useState(false);
     const summaryRef = useRef(null);
 
     useEffect(() => {
@@ -35,6 +37,20 @@ const MovieDetailHeader = ({ movieDetail }) => {
             setIsOverflow(el.scrollHeight > el.clientHeight + 1); // 약간의 오차 허용
         }
     }, [movieDetail?.description]);
+
+    const handleCommentClick = () => {
+        if (userRating === 0) {
+            alert('별점을 먼저 입력해주세요.');
+            return;
+        }
+        setCommentModalOpen(true);
+    };
+    const handleCommentSave = (comment) => {
+        // TODO: 저장 로직 구현
+        alert('코멘트가 저장되었습니다!\n' + comment);
+        setCommentModalOpen(false);
+        if (onCommentSaved) onCommentSaved();
+    };
 
     return (
         <>
@@ -50,7 +66,7 @@ const MovieDetailHeader = ({ movieDetail }) => {
                         <span>{movieDetail.showTm}분</span> · <span>{movieDetail.watchGradeNm}</span>
                     </div>
                     <div className={styles.stats}>
-                        <span>예매 순위 {movieDetail.rank}위</span><span>({movieDetail.reservationRate})</span> · <span>누적 관객 {movieDetail.audienceCount}</span>
+                        <span>예매 순위 {movieDetail.rank || movieDetail.reservationRank}위</span><span>({movieDetail.reservationRate})</span> · <span>누적 관객 {movieDetail.audienceCount || movieDetail.totalAudience}</span>
                     </div>
                     <div className={styles.userRating}>
                         <span>평가하기</span>
@@ -89,6 +105,7 @@ const MovieDetailHeader = ({ movieDetail }) => {
                                     className={styles.starImg}
                                     role="button"
                                     aria-label={`${value}점 주기`}
+                                    
                                 />
                             );
                         })}
@@ -109,6 +126,7 @@ const MovieDetailHeader = ({ movieDetail }) => {
                                 className={styles.iconBtn}
                                 onMouseEnter={() => setCommentHover(true)}
                                 onMouseLeave={() => setCommentHover(false)}
+                                onClick={handleCommentClick}
                             >
                                 <img src={commentHover ? commentIcon_hover : commentIcon} alt="코멘트" />
                             </button>
@@ -161,7 +179,14 @@ const MovieDetailHeader = ({ movieDetail }) => {
                 </div>
             </div>
             <hr className={styles.detailDivider} />
-
+            <CommentModal
+                open={commentModalOpen}
+                onClose={() => setCommentModalOpen(false)}
+                onSave={handleCommentSave}
+                movieTitle={movieDetail.movieNm}
+                userRating={userRating}
+                movieCd={movieDetail.movieCd}
+            />
         </>
     );
 };
