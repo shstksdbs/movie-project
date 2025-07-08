@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './MovieDetailHeader.module.css';
+import { useUser } from '../../contexts/UserContext';
 
 
 // 아이콘 경로
@@ -15,9 +16,23 @@ import starFull from '../../assets/star_full.svg';
 import starHalf from '../../assets/star_half.svg';
 import starEmpty from '../../assets/star_empty.svg';
 import CommentModal from '../Modal/CommentModal';
+import { Bar, Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  LineElement,
+  BarElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+
+ChartJS.register(LineElement, BarElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 
-const MovieDetailHeader = ({ movieDetail, onCommentSaved }) => {
+const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }) => {
+    const { user } = useUser();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showMore, setShowMore] = useState(false);
@@ -28,6 +43,9 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved }) => {
     const [shareHover, setShareHover] = useState(false);
     const [isOverflow, setIsOverflow] = useState(false);
     const [commentModalOpen, setCommentModalOpen] = useState(false);
+    const [ratingLoading, setRatingLoading] = useState(false);
+    const [hasLoadedRating, setHasLoadedRating] = useState(false);
+    const [ratingDist, setRatingDist] = useState(null);
     const summaryRef = useRef(null);
 
     useEffect(() => {
@@ -37,6 +55,162 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved }) => {
             setIsOverflow(el.scrollHeight > el.clientHeight + 1); // 약간의 오차 허용
         }
     }, [movieDetail?.description]);
+
+    // 사용자의 기존 별점 조회
+    useEffect(() => {
+        const fetchUserRating = async () => {
+            if (!movieDetail?.movieCd || hasLoadedRating) return;
+            
+            try {
+                const response = await fetch(`http://localhost:80/api/ratings/${movieDetail.movieCd}`, {
+                    credentials: 'include',
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        setUserRating(data.data.score);
+                    } else {
+                        // 별점이 없는 경우 0으로 설정
+                        setUserRating(0);
+                    }
+                } else {
+                    // 응답이 실패한 경우 0으로 설정
+                    setUserRating(0);
+                }
+            } catch (error) {
+                console.error('사용자 별점 조회 실패:', error);
+                setUserRating(0);
+            } finally {
+                setHasLoadedRating(true);
+            }
+        };
+
+        fetchUserRating();
+    }, [movieDetail?.movieCd, hasLoadedRating]);
+
+    // 영화가 변경될 때 별점 조회 상태 초기화
+    useEffect(() => {
+        setHasLoadedRating(false);
+        setUserRating(0);
+    }, [movieDetail?.movieCd]);
+
+    // 별점 분포도 불러오기
+    useEffect(() => {
+        if (!movieDetail?.movieCd) return;
+        fetch(`http://localhost:80/api/ratings/movie/${movieDetail.movieCd}/distribution`, {
+            credentials: 'include'
+          })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data?.distribution) {
+                    console.log(data.data.distribution);
+                    setRatingDist(data.data.distribution);
+                } else {
+                    setRatingDist(null);
+                }
+            })
+            .catch(() => setRatingDist(null));
+    }, [movieDetail?.movieCd]);
+
+    // ratingSteps, chartLabels, chartData를 0.5~5.0 오름차순으로 변경
+    const ratingSteps = ["0.5", "1.0", "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0"];
+
+    // 최다득표 점수 계산
+    const maxCount = ratingDist ? Math.max(...ratingSteps.map(star => ratingDist[star] || 0)) : 0;
+    const maxStar = ratingDist ? ratingSteps.find(star => (ratingDist[star] || 0) === maxCount) : null;
+
+    // chart.js용 데이터 및 옵션
+    const chartLabels = ratingSteps.map(star => star.replace('.0', ''));
+    const chartData = ratingSteps.map(star => ratingDist ? (ratingDist[star] || 0) : 0);
+
+    const data = {
+      labels: chartLabels,
+      datasets: [
+        {
+          label: '별점 분포',
+          data: chartData,
+          fill: false,
+          borderColor: '#ff3366',
+          backgroundColor: '#ff3366',
+          tension: 0.3,
+          pointRadius: 4,
+          pointBackgroundColor: '#ff3366',
+        },
+      ],
+    };
+
+    const options = {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: true },
+      },
+      scales: {
+        x: {
+          title: { display: true, text: '별점 그래프' },
+          grid: { display: false },
+        },
+        y: {
+          title: { display: true, text: '인원수' },
+          beginAtZero: true,
+          ticks: { stepSize: 1, precision: 0 },
+        },
+      },
+    };
+
+    // Bar 차트 데이터 및 옵션
+    const barData = {
+      labels: chartLabels,
+      datasets: [
+        {
+          label: '별점 분포 (막대)',
+          data: chartData,
+          backgroundColor: '#ffc107',
+          borderColor: undefined, // 테두리 제거
+          borderWidth: 0,
+          borderRadius: 4,
+          barPercentage: 0.7,
+          categoryPercentage: 0.7,
+        },
+      ],
+    };
+
+    // x축 제목 동적 생성
+    const averageRating = movieDetail?.averageRating ? Number(movieDetail.averageRating).toFixed(1) : '-';
+    // 평가자 수: ratingDist 값들의 합
+    const totalRaters = ratingDist ? Object.values(ratingDist).reduce((sum, v) => sum + (v || 0), 0) : 0;
+    const xAxisTitle = `평균 ★${averageRating}  (${totalRaters}명)`;
+
+    const barOptions = {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          enabled: true,
+          bodyColor: '#cecece', // 툴팁 본문 색상
+          titleColor: '#cecece', // 툴팁 제목 색상
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: xAxisTitle,
+            color: '#cecece',
+            font: { size: 14 }, // 글자 크기 키움
+          },
+          ticks: { color: '#cecece' }, // x축 라벨 색상
+          grid: { display: false },
+        },
+        y: {
+          title: { display: false },
+          beginAtZero: true,
+          ticks: { display: false },
+          grid: { display: false },
+        },
+      },
+    };
 
     const handleCommentClick = () => {
         if (userRating === 0) {
@@ -50,6 +224,87 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved }) => {
         alert('코멘트가 저장되었습니다!\n' + comment);
         setCommentModalOpen(false);
         if (onCommentSaved) onCommentSaved();
+    };
+
+    // 별점 저장 API 호출 함수
+    const saveRating = async (score) => {
+        if (!movieDetail?.movieCd) {
+            alert('영화 정보가 없습니다.');
+            return;
+        }
+
+        setRatingLoading(true);
+        try {
+            const response = await fetch('http://localhost:80/api/ratings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    movieCd: movieDetail.movieCd,
+                    score: score
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                // 별점 저장 성공 시 사용자 별점을 다시 조회하여 정확한 값 설정
+                try {
+                    const ratingResponse = await fetch(`http://localhost:80/api/ratings/${movieDetail.movieCd}`, {
+                        credentials: 'include',
+                    });
+                    
+                    if (ratingResponse.ok) {
+                        const ratingData = await ratingResponse.json();
+                        if (ratingData.success && ratingData.data) {
+                            setUserRating(ratingData.data.score);
+                        } else {
+                            setUserRating(score);
+                        }
+                    } else {
+                        setUserRating(score);
+                    }
+                } catch (error) {
+                    console.error('별점 재조회 실패:', error);
+                    setUserRating(score);
+                }
+                
+                alert(data.message || '별점이 저장되었습니다.');
+                // 부모 컴포넌트에 별점 저장 완료 알림
+                if (onCommentSaved) onCommentSaved();
+                // 영화 상세 정보 새로고침 (평균 별점 업데이트를 위해)
+                if (onRefreshMovieDetail) onRefreshMovieDetail();
+            } else {
+                // 저장 실패 시 userRating을 원래대로 되돌리기
+                setUserRating(0);
+                alert(data.message || '별점 저장에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('별점 저장 실패:', error);
+            // 네트워크 오류 시에도 userRating을 원래대로 되돌리기
+            setUserRating(0);
+            alert('별점 저장 중 오류가 발생했습니다.');
+        } finally {
+            setRatingLoading(false);
+        }
+    };
+
+    // 별점 클릭 핸들러
+    const handleStarClick = (e, value) => {
+        if (!user) {
+            alert('로그인 후 별점을 등록할 수 있습니다.');
+            return;
+        }
+
+        const rect = e.target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const score = x < rect.width / 2 ? value - 0.5 : value;
+        
+        // 즉시 UI에 반영 (저장 중에는 이 값이 유지됨)
+        setUserRating(score);
+        saveRating(score);
     };
 
     return (
@@ -73,25 +328,22 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved }) => {
                         {[...Array(5)].map((_, i) => {
                             const value = i + 1;
                             let starImg = starEmpty;
-                            if ((hoverRating ? hoverRating : userRating) >= value) {
+                            
+                            // 호버 중이면 호버 값, 아니면 실제 저장된 별점 사용
+                            const currentRating = hoverRating || userRating;
+                            
+                            if (currentRating >= value) {
                                 starImg = starFull;
-                            } else if ((hoverRating ? hoverRating : userRating) >= value - 0.5) {
+                            } else if (currentRating >= value - 0.5) {
                                 starImg = starHalf;
                             }
+                            
                             return (
                                 <img
                                     key={i}
                                     src={starImg}
                                     alt={`${value}점`}
-                                    onClick={e => {
-                                        const rect = e.target.getBoundingClientRect();
-                                        const x = e.clientX - rect.left;
-                                        if (x < rect.width / 2) {
-                                            setUserRating(value - 0.5);
-                                        } else {
-                                            setUserRating(value);
-                                        }
-                                    }}
+                                    onClick={e => handleStarClick(e, value)}
                                     onMouseMove={e => {
                                         const rect = e.target.getBoundingClientRect();
                                         const x = e.clientX - rect.left;
@@ -102,14 +354,19 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved }) => {
                                         }
                                     }}
                                     onMouseLeave={() => setHoverRating(0)}
-                                    className={styles.starImg}
+                                    className={`${styles.starImg} ${ratingLoading ? styles.disabled : ''}`}
                                     role="button"
                                     aria-label={`${value}점 주기`}
-                                    
+                                    style={{ cursor: ratingLoading ? 'not-allowed' : 'pointer' }}
                                 />
                             );
                         })}
+                        {/* {ratingLoading && <span className={styles.loadingText}>저장 중...</span>}
+                        {userRating > 0 && !ratingLoading && (
+                            <span className={styles.ratingText}>내 별점: {userRating.toFixed(1)}점</span>
+                        )} */}
                     </div>
+                   
                     <div className={styles.actions}>
                         <div className={styles.actionItem}>
                             <button
@@ -176,6 +433,13 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved }) => {
                 </div>
                 <div className={styles.headerRight}>
                     <img src={movieDetail.posterUrl || posterImg} alt="영화 포스터" className={styles.posterImg} />
+                    {/* 별점 분포도 시각화 - chart.js 막대그래프만 표시 */}
+                    {ratingDist && (
+                        <div className={styles.ratingDistWrap}>
+                            {/* <div className={styles.ratingDistTitle}>별점 그래프</div> */}
+                            <Bar data={barData} options={barOptions} />
+                        </div>
+                    )}
                 </div>
             </div>
             <hr className={styles.detailDivider} />

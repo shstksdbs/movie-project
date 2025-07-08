@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import styles from './CommentDetailModal.module.css';
 import likeIcon from '../../assets/like_icon.png';
 import likeIconTrue from '../../assets/like_icon_true.png';
@@ -7,10 +7,18 @@ import userIcon from '../../assets/user_icon.png';
 import commentIcon2 from '../../assets/comment_icon2.png';
 import ReplyModal from './ReplyModal';
 import { useUser } from '../../contexts/UserContext';
+import previousIcon from '../../assets/previous_icon_c.png';
 
 // 대댓글(Reply) 카드 컴포넌트
-function ReplyCard({ reply, userId, onEdit, onDelete }) {
+function ReplyCard({ reply, userId, onEdit, onDelete, onLike }) {
   const isMine = userId && (reply.userId === userId);
+
+  const handleLikeClick = () => {
+    if (onLike) {
+      onLike(reply.id, reply.likedByMe);
+    }
+  };
+
   return (
     <div className={styles.replyCard}>
 
@@ -30,9 +38,15 @@ function ReplyCard({ reply, userId, onEdit, onDelete }) {
         </div>
         <div className={styles.replyContent}>{reply.content}</div>
         <div className={styles.replyFooter}>
-          <img src={likeIcon} alt="좋아요" className={styles.replyLikeIcon} />
+          <img
+            src={reply.likedByMe ? likeIconTrue : likeIcon}
+            alt="좋아요"
+            className={styles.replyLikeIcon}
+            onClick={handleLikeClick}
+            style={{ cursor: 'pointer' }}
+          />
           <span>{reply.likeCount ?? 0}</span>
-          
+
         </div>
         <hr className={styles.replyDivider} />
       </div>
@@ -46,18 +60,18 @@ function getRelativeDate(dateString) {
   const now = new Date();
 
   // 오늘 날짜(연, 월, 일)만 비교
-  const dateYMD = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate();
-  const nowYMD = now.getFullYear() + '-' + (now.getMonth()+1) + '-' + now.getDate();
+  const dateYMD = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+  const nowYMD = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
 
   if (dateYMD === nowYMD) return '오늘';
 
   // 며칠 전 계산
-  const diffTime = now.setHours(0,0,0,0) - date.setHours(0,0,0,0);
+  const diffTime = now.setHours(0, 0, 0, 0) - date.setHours(0, 0, 0, 0);
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   return `${diffDays}일 전`;
 }
 // 코멘트 상세 + 대댓글 리스트 모달
-const CommentDetailModal = ({ open, onClose, comment, reviewId, fetchComments }) => {
+const CommentDetailModal = ({ open, onClose, onBack, comment, reviewId, fetchComments }) => {
   const { user } = useUser();
   const myUserId = user?.id;
   const [localComment, setLocalComment] = useState(comment);
@@ -70,27 +84,65 @@ const CommentDetailModal = ({ open, onClose, comment, reviewId, fetchComments })
   const [replyModalOpen, setReplyModalOpen] = useState(false);
   const [editReplyModalOpen, setEditReplyModalOpen] = useState(false);
   const [editTargetReply, setEditTargetReply] = useState(null);
+  // 좋아요 상태를 로컬에서 관리하기 위한 상태
+  const [localLikeStates, setLocalLikeStates] = useState({});
+  // 좋아요 수를 로컬에서 관리하기 위한 상태
+  const [localLikeCounts, setLocalLikeCounts] = useState({});
 
   // 대댓글 목록 불러오기 함수 분리
-  const fetchReplies = () => {
+  const fetchReplies = useCallback(async () => {
     if (!open || !reviewId) return;
     setLoading(true);
     setError(null);
-    fetch(`http://localhost:80/api/comments/review/${reviewId}/all`, {
-      credentials: 'include',
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setReplies(data.data || []);
-          console.log(data.data);
-        } else {
-          setError(data.message || '대댓글 불러오기 실패');
-        }
-      })
-      .catch(() => setError('대댓글 불러오기 실패'))
-      .finally(() => setLoading(false));
-  };
+    try {
+      const res = await fetch(`http://localhost:80/api/comments/review/${reviewId}/all${myUserId ? `?userId=${myUserId}` : ''}`, {
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (data.success) {
+        console.log(data.data);
+        // 각 대댓글의 최신 좋아요 수를 병렬로 가져오기
+        const replies = data.data || [];
+        const repliesWithLikeCount = await Promise.all(
+          replies.map(async reply => {
+            try {
+              const resLike = await fetch(`http://localhost:80/api/comments/${reply.id}/like-count`, {
+                credentials: 'include',
+              });
+              const likeData = await resLike.json();
+              return {
+                ...reply,
+                likeCount: likeData.success ? likeData.likeCount : reply.likeCount
+              };
+            } catch {
+              return reply;
+            }
+          })
+        );
+        // 기존 병합 로직 적용
+        const repliesWithLikeStatus = repliesWithLikeCount.map(reply => {
+          const finalLikeCount = (localLikeCounts[reply.id] !== undefined)
+            ? localLikeCounts[reply.id]
+            : reply.likeCount;
+          const finalLikedByMe = (localLikeStates[reply.id] !== undefined)
+            ? localLikeStates[reply.id]
+            : (reply.likedByMe !== undefined ? reply.likedByMe : false);
+          return {
+            ...reply,
+            likedByMe: finalLikedByMe,
+            likeCount: finalLikeCount
+          };
+        });
+        setReplies(repliesWithLikeStatus);
+      } else {
+        setError(data.message || '대댓글 불러오기 실패');
+      }
+    } catch (e) {
+      setError('대댓글 불러오기 실패');
+    } finally {
+      setLoading(false);
+    }
+  }, [open, reviewId, localLikeStates, localLikeCounts, myUserId]);
 
   // 좋아요 클릭 핸들러
   const handleLike = async () => {
@@ -162,9 +214,101 @@ const CommentDetailModal = ({ open, onClose, comment, reviewId, fetchComments })
     }
   };
 
+  // 좋아요 수를 서버에서 받아와 동기화하는 함수
+  const updateLikeCountFromServer = async (commentId) => {
+    try {
+      const res = await fetch(`http://localhost:80/api/comments/${commentId}/like-count`, {
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (data.success) {
+        console.log(data.data);
+        setLocalLikeCounts(prev => ({
+          ...prev,
+          [commentId]: data.likeCount
+        }));
+        setReplies(prevReplies =>
+          prevReplies.map(reply =>
+            reply.id === commentId
+              ? { ...reply, likeCount: data.likeCount }
+              : reply
+          )
+        );
+      }
+    } catch (e) {
+      console.log('실패');
+      // 실패 시 무시(프론트 값 유지)
+    }
+  };
+
+  // 대댓글 좋아요 클릭 핸들러
+  const handleReplyLike = async (commentId, likedByMe) => {
+    if (!myUserId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    // 현재 likeCount 가져오기
+    const replyLikeCount = replies.find(r => r.id === commentId)?.likeCount;
+    try {
+      let res;
+      if (likedByMe) {
+        // 좋아요 취소 (DELETE)
+        res = await fetch(`http://localhost:80/api/comments/${commentId}/like?userId=${myUserId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+      } else {
+        // 좋아요 (POST)
+        res = await fetch(`http://localhost:80/api/comments/${commentId}/like`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: myUserId }),
+          credentials: 'include',
+        });
+      }
+      const data = await res.json();
+      if (data.success) {
+        // 로컬 좋아요 상태 및 카운트 업데이트
+        setLocalLikeStates(prev => ({
+          ...prev,
+          [commentId]: !likedByMe
+        }));
+        setLocalLikeCounts(prev => ({
+          ...prev,
+          [commentId]: !likedByMe
+            ? (replyLikeCount ?? 0) + 1
+            : Math.max((replyLikeCount ?? 1) - 1, 0)
+        }));
+        setReplies(prevReplies =>
+          prevReplies.map(reply =>
+            reply.id === commentId
+              ? {
+                ...reply,
+                likedByMe: !likedByMe,
+                likeCount: !likedByMe
+                  ? (replyLikeCount ?? 0) + 1
+                  : Math.max((replyLikeCount ?? 1) - 1, 0)
+              }
+              : reply
+          )
+        );
+        // 서버에서 최신 좋아요 수 동기화
+        await updateLikeCountFromServer(commentId);
+      } else {
+        alert(data.message || '좋아요 처리 실패');
+      }
+    } catch (e) {
+      alert('네트워크 오류');
+    }
+  };
+
   useEffect(() => {
-    fetchReplies();
-  }, [open, reviewId]);
+    if (open) {
+      fetchReplies();
+    }
+  }, [fetchReplies]);
 
   if (!open || !comment) return null;
 
@@ -172,7 +316,12 @@ const CommentDetailModal = ({ open, onClose, comment, reviewId, fetchComments })
     <div className={styles.modalOverlay}>
       <div className={styles.modalContainer}>
         {/* 상단: 코멘트 카드 (MovieDetailBody 스타일 재사용) */}
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <div className={styles.modalHeaderButtons}>
+          <button className={styles.prevBtn} onClick={onBack}>
+            <img src={previousIcon} alt="이전" className={styles.prevIconBtnImg} />
+          </button>
+          <button className={styles.closeBtn} onClick={onClose}>×</button>
+        </div>
         <div className={styles.commentCard}>
           <div className={styles.commentHeader}>
             <span className={styles.commentUser}>{comment.userNickname || comment.user || '익명'}</span>
@@ -224,17 +373,18 @@ const CommentDetailModal = ({ open, onClose, comment, reviewId, fetchComments })
         {/* 하단: 대댓글 리스트 */}
         <div className={styles.replySection}>
 
-          {loading && <div>로딩 중...</div>}
+          {/* {loading && <div>로딩 중...</div>} */}
           {error && <div style={{ color: 'red' }}>{error}</div>}
           {!loading && !error && replies.length === 0 && <div>아직 댓글이 없습니다.</div>}
           <div className={styles.replyList}>
             {replies.map((reply, idx) => (
               <ReplyCard
+                key={`reply-${reply.id}-${idx}`}
                 reply={reply}
                 userId={myUserId}
-                key={reply.id || idx}
                 onEdit={() => handleEditReply(reply)}
                 onDelete={() => handleDeleteReply(reply)}
+                onLike={handleReplyLike}
               />
             ))}
           </div>

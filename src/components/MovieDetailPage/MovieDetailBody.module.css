@@ -166,23 +166,39 @@ h2 {
   margin-left: auto;
 }
 
-.commentActions button {
-  background: none;
-  border: 1px solid #555;
-  border-radius: 6px;
+
+.replyEditBtn {
+  background: #222;
   color: #aaa;
-  font-size: 0.85rem;
-  padding: 4px 8px;
+  border: none;
+  border-radius: 5px;
+  padding: 3px 10px;
+  margin-left: 8px;
+  font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  border: solid 1px #525252;
+  transition: background 0.2s, color 0.2s;
 }
-
-.commentActions button:hover {
-  background: #555;
+.replyEditBtn:hover {
+  background: #FFD600;
+  color: #222;
+}
+.replyDeleteBtn {
+  background: #222;
+  color: #ff4d4f;
+  border: none;
+  border-radius: 5px;
+  padding: 3px 10px;
+  margin-left: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: solid 1px #525252;
+  transition: background 0.2s, color 0.2s;
+}
+.replyDeleteBtn:hover {
+  background: #ff4d4f;
   color: #fff;
-  border-color: #666;
 }
-
 
 /* 비슷한 작품 카드 */
 .similarMovieCard {

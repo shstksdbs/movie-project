@@ -267,6 +267,21 @@
 }
 
 /* 모달 닫기 버튼 위치 조정 */
+.modalHeaderButtons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 8px;
+}
+.prevBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0;
+  padding: 0 5px;
+}
 .closeBtn {
   background: none;
   border: none;
@@ -274,10 +289,14 @@
   font-size: 2rem;
   cursor: pointer;
   transition: color 0.2s;
-  display: block;
-  margin: 0 0 0 auto;
+  z-index: 10;
   padding: 0 10px;
-  position: static;
+}
+.prevIconBtnImg {
+  width: 1.2rem;
+  height: 1.2rem;
+  object-fit: contain;
+  display: block;
 }
 
 .closeBtn:hover {

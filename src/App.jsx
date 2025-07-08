@@ -15,6 +15,8 @@ import ResetPasswordPage from './components/LoginPage/ResetPasswordPage';
 import MainPage from './components/MainPage/MainPage';
 import SearchResultPage from './components/SearchResultPage/SearchResultPage';
 import MovieDetailPage from './components/MovieDetailPage/MovieDetailPage';
+import DirectorDetailPage from './components/PersonDetailPage/DirectorDetailPage';
+import ActorDetailPage from './components/PersonDetailPage/ActorDetailPage';
 
 export default function App() {
   return (
@@ -34,6 +36,8 @@ export default function App() {
             <Route path="/" element={<MainPage />} />
             <Route path="/search" element={<SearchResultPage />} />
             <Route path="/movie-detail/:movieCd" element={<MovieDetailPage />} />
+            <Route path="/person/director/:id" element={<DirectorDetailPage />} />
+            <Route path="/person/actor/:id" element={<ActorDetailPage />} />
           </Routes>
         </DefaultLayout>
       </BrowserRouter>

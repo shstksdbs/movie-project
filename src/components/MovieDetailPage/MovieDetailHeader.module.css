@@ -8,10 +8,13 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+     justify-content: center;
     gap: 32px;
     overflow-x: hidden;
     max-width: 1920px;
+    min-height: 480px;
+    justify-content: center;
 }
 
 .headerLeft {
@@ -25,21 +28,22 @@
 
 .headerRight {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-width: 240px;
-    height: 360px;
-    overflow: hidden;
+    height: auto;
+    overflow: visible;
 }
 
 .posterImg {
     width: 260px;
-    height: 390px;
+    height: 360px;
     object-fit: cover;
     border-radius: 12px;
     box-shadow: 0 4px 24px 0 rgba(0,0,0,0.25);
     background: #222;
-    margin-top: 3rem;
+    margin-top: 0;
 }
 
 .title {
@@ -87,6 +91,35 @@
     cursor: pointer;
     user-select: none;
     vertical-align: middle;
+    transition: opacity 0.2s ease;
+}
+
+.starImg.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.loadingText {
+    color: #b0b8c1;
+    font-size: 0.9rem;
+    margin-left: 8px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.ratingText {
+    color: #ffc107;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 .starBg {
@@ -139,7 +172,7 @@
 }
 
 .summaryWrap {
-    width: 47%;
+    width: 35%;
     overflow: visible;
     max-height: none;
     align-self: flex-start;
@@ -214,4 +247,39 @@
     border: none;
     border-top: 1.5px solid #2c323a;
     margin: 40px auto 0 auto; /* 좌우 auto로 변경 */
+}
+
+.ratingDistWrap {
+    margin-top: 16px;
+    width: 100%;
+}
+.ratingDistTitle {
+    font-size: 14px;
+    margin-bottom: 4px;
+    text-align: center;
+    font-weight: 500;
+    color: #cecece;
+    margin-bottom: 5px;
+}
+.ratingDistBars {
+    display: flex;
+    align-items: flex-end;
+    height: 70px;
+    justify-content: center;
+    gap: 2px;
+}
+.ratingDistBar {
+    text-align: center;
+    width: 30px;
+}
+.ratingDistBarInner {
+    background: #FFD700;
+    width: 20px;
+    margin: 0 auto;
+    border-radius: 4px;
+    transition: height 0.3s;
+}
+.ratingDistLabel {
+    font-size: 12px;
+    margin-top: 2px;
 }

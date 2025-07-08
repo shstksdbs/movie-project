@@ -4,21 +4,27 @@ import searchIcon from '../../assets/search_icon.png';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import MovieCard from '../MainPage/MovieCard';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 function ActorCard({ actor }) {
+  const personLink = actor.role === '감독'
+    ? `/person/director/${actor.id}`
+    : `/person/actor/${actor.id}`;
   return (
-    <div className={styles.actorCard}>
-      <div 
-        className={styles.actorImg}
-        style={{
-          backgroundImage: actor.photoUrl ? `url(${actor.photoUrl})` : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      ></div>
-      <div className={styles.actorName}>{actor.name}</div>
-      <div className={styles.actorRole}>{actor.role}</div>
-    </div>
+    <Link to={personLink} className={styles.actorCardLink}>
+      <div className={styles.actorCard}>
+        <div
+          className={styles.actorImg}
+          style={{
+            backgroundImage: actor.photoUrl ? `url(${actor.photoUrl})` : 'none',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        ></div>
+        <div className={styles.actorName}>{actor.name}</div>
+        <div className={styles.actorRole}>{actor.role}</div>
+      </div>
+    </Link>
   );
 }
 
@@ -50,7 +56,7 @@ export default function SearchResultPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => { 
+  useEffect(() => {
     setInput(initialQuery);
     setSearch(initialQuery);
   }, [initialQuery]);
@@ -60,7 +66,7 @@ export default function SearchResultPage() {
     window.scrollTo(0, 0);
     setLoading(true);
     setError(null);
-    
+
     // 영화 검색과 인물 검색을 병렬로 실행
     Promise.all([
       fetch(`http://localhost:80/data/api/movie-detail-dto/search?keyword=${encodeURIComponent(search)}&page=0&size=20`),
@@ -78,33 +84,33 @@ export default function SearchResultPage() {
         // 인물 데이터 처리
         const peopleList = [];
         const peopleMap = {};
-        
+
         // 배우 데이터 추가
         (personData.actors || []).forEach(actor => {
           if (actor.name && !peopleMap[actor.name]) {
             peopleMap[actor.name] = true;
-            peopleList.push({ 
-              name: actor.name, 
+            peopleList.push({
+              name: actor.name,
               role: '배우',
               photoUrl: actor.photoUrl,
               id: actor.id
             });
           }
         });
-        
+
         // 감독 데이터 추가
         (personData.directors || []).forEach(director => {
           if (director.name && !peopleMap[director.name]) {
             peopleMap[director.name] = true;
-            peopleList.push({ 
-              name: director.name, 
+            peopleList.push({
+              name: director.name,
               role: '감독',
               photoUrl: director.photoUrl,
               id: director.id
             });
           }
         });
-        
+
         setPeople(peopleList);
         // console.log('영화:', movies);
         // console.log('인물:', peopleList);
@@ -120,7 +126,7 @@ export default function SearchResultPage() {
       axios.post('http://localhost:80/api/search-history', null, {
         params: { keyword: input, searchResultCount: 0 },
         withCredentials: true
-      }).catch(() => {});
+      }).catch(() => { });
       setSearch(input);
       navigate(`/search?query=${encodeURIComponent(input)}`);
     }

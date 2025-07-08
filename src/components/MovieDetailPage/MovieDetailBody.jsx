@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './MovieDetailBody.module.css';
 // assets 이미지 import
 import banner1 from '../../assets/banner1.jpg';
@@ -18,6 +19,7 @@ import ReplyModal from '../Modal/ReplyModal';
 import CommentDetailModal from '../Modal/CommentDetailModal';
 import { useUser } from '../../contexts/UserContext';
 import CommentModal from '../Modal/CommentModal';
+import AllCommentsModal from '../Modal/AllCommentsModal';
 
 
 const dummySimilar = [
@@ -61,18 +63,102 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
   // 수정 모달 상태
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
+  // 전체 코멘트 모달 상태
+  const [allCommentsModalOpen, setAllCommentsModalOpen] = useState(false);
+  // 코멘트별 별점 상태
+  const [commentRatings, setCommentRatings] = useState({});
+
+  // AllCommentsModal에서 코멘트 클릭 시 상세 모달로 전환
+  const handleAllCommentsCommentClick = (comment) => {
+    setSelectedReviewId(comment.id);
+    setSelectedComment(comment);
+    setAllCommentsModalOpen(false);
+    setCommentDetailModalOpen(true);
+  };
+
+  // 상세 모달에서 이전(닫기) 버튼 클릭 시 전체 코멘트 모달 다시 열기
+  const handleDetailModalClose = () => {
+    setCommentDetailModalOpen(false);
+    setAllCommentsModalOpen(true);
+  };
+
+  // 전체 코멘트 개수
+  const totalCommentCount = comments.length; // 필요시 props로 전달받거나 별도 fetch 필요
+
+  // 코멘트별 별점 조회 함수
+  const fetchCommentRating = async (commentUserId) => {
+    if (!movieCd || !commentUserId) return null;
+
+    try {
+      const response = await fetch(`http://localhost:80/api/ratings/${movieCd}`, {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          return data.data.score;
+        }
+      }
+    } catch (error) {
+      console.error('별점 조회 실패:', error);
+    }
+    return null;
+  };
+
+  // 전체 코멘트(무한스크롤/정렬) fetch 함수
+  // 실제 API에 맞게 수정 필요
+  const fetchAllComments = async ({ page, sort, limit }) => {
+    // 예시: /api/reviews?movieCd=xxx&page=1&sort=like&limit=4
+    const params = new URLSearchParams({
+      movieCd,
+      page,
+      sort,
+      limit,
+    });
+    const res = await fetch(`/api/reviews?${params.toString()}`, {
+      credentials: 'include',
+    });
+    if (!res.ok) return { comments: [] };
+    const data = await res.json();
+    console.log(data.data);
+    // data: { comments: [], totalCount: number }
+    return data;
+  };
+
+  // 코멘트 목록이 변경될 때 각 코멘트의 별점 조회
+  useEffect(() => {
+    const fetchAllCommentRatings = async () => {
+      const ratings = {};
+
+      for (const comment of comments) {
+        if (comment.userId) {
+          const rating = await fetchCommentRating(comment.userId);
+          if (rating !== null) {
+            ratings[comment.id] = rating;
+          }
+        }
+      }
+
+      setCommentRatings(ratings);
+    };
+
+    if (comments.length > 0) {
+      fetchAllCommentRatings();
+    }
+  }, [comments, movieCd]);
 
   // 작성시간을 상대적 시간으로 변환하는 함수
   const formatRelativeTime = (dateString) => {
     if (!dateString) return '';
-    
+
     const now = new Date();
     const commentDate = new Date(dateString);
-    
+
     // 날짜 차이 계산 (밀리초 단위)
     const diffTime = now.getTime() - commentDate.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return '오늘';
     } else if (diffDays === 1) {
@@ -94,12 +180,14 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
     peopleNm: d.peopleNm,
     photoUrl: d.photoUrl && d.photoUrl.trim() !== '' ? d.photoUrl : userIcon,
     cast: '감독',
+    type: 'director', // 반드시 추가!
   }));
   const actorList = (actors || []).map(a => ({
     id: a.id,
     peopleNm: a.peopleNm,
     photoUrl: a.photoUrl && a.photoUrl.trim() !== '' ? a.photoUrl : userIcon,
     cast: '출연',
+    type: 'actor', // 반드시 추가!
   }));
   const castList = [...directorList, ...actorList];
 
@@ -134,7 +222,7 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
     setReplyModalOpen(true);
   };
 
-  
+
 
   // 코멘트 삭제 핸들러
   const handleDelete = (commentId) => {
@@ -206,6 +294,14 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
     fetchComments();
   };
 
+  // 모든 모달을 닫는 함수
+  const handleCloseAllModals = () => {
+    setCommentDetailModalOpen(false);
+    setEditModalOpen(false);
+    setReplyModalOpen(false);
+    setAllCommentsModalOpen(false);
+  };
+
   return (
     <div className={styles.detailBody}>
       <section>
@@ -225,17 +321,24 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
                 {pageList.map((person, idx) => {
                   const rowIdx = Math.floor(idx / 4);
                   const isFirstOrSecondRow = rowIdx === 0 || rowIdx === 1;
+                  const personLink = person.type === 'director'
+                    ? `/person/director/${person.id}`
+                    : `/person/actor/${person.id}`;
                   return (
                     <div
                       className={styles.castCard}
-                      key={person.id || idx}
+                      key={person.id ? `person-${person.type ?? 'unknown'}-${person.id}` : `page-${pageIdx}-idx-${idx}`}
                     >
-                      <img src={person.photoUrl} alt={person.peopleNm} className={styles.castImg} />
+                      <Link to={personLink} style={{ display: 'block' }}>
+                        <img src={person.photoUrl} alt={person.peopleNm} className={styles.castImg} />
+                      </Link>
                       <div className={
                         styles.castInfo +
                         (isFirstOrSecondRow ? ' ' + styles.castInfoWithBorder : '')
                       }>
-                        <div className={styles.castName}>{person.peopleNm}</div>
+                        <Link to={personLink} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          <div className={styles.castName}>{person.peopleNm}</div>
+                        </Link>
                         <div className={styles.castRole}>{person.cast}</div>
                       </div>
                     </div>
@@ -254,10 +357,10 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
       <section>
         <div className={styles.commentSectionHeader}>
           <h2 className={styles.commentSectionTitle}>코멘트</h2>
-          <span className={styles.commentSectionMore}>더보기</span>
+          <span className={styles.commentSectionMore} onClick={() => setAllCommentsModalOpen(true)}>더보기</span>
         </div>
         <div className={styles.commentGrid}>
-          {commentLoading && <div>로딩 중...</div>}
+          {/* {commentLoading && <div>로딩 중...</div>} */}
           {commentError && <div style={{ color: 'red' }}>{commentError}</div>}
           {!commentLoading && !commentError && comments.length === 0 && <div>아직 코멘트가 없습니다.</div>}
           {comments.map((comment, idx) => (
@@ -272,7 +375,9 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
                   <span className={styles.commentUser}>{comment.userNickname || comment.user || '익명'}</span>
                   <span className={styles.commentDate}>{formatRelativeTime(comment.updatedAt || comment.date)}</span>
                 </div>
-                <span className={styles.commentRating}>★ {comment.rating ? comment.rating.toFixed(1) : '-'}</span>
+                <span className={styles.commentRating}>
+                  ★ {comment.rating ? comment.rating.toFixed(1) : '-'}
+                </span>
               </div>
               <hr className={styles.commentDivider} />
               <div className={styles.commentContent}>{comment.content}</div>
@@ -280,12 +385,12 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
               <div className={styles.commentFooter}>
                 <span>좋아요 {comment.likeCount ?? 0}</span>
                 <span>댓글 {comment.commentCount ?? 0}</span>
-                
+
                 {/* 👇 조건부 버튼 */}
                 {user && user.id === comment.userId && (
                   <div className={styles.commentActions} onClick={e => e.stopPropagation()}>
-                    <button onClick={() => handleEdit(comment)}>수정</button>
-                    <button onClick={() => handleDelete(comment.id)}>삭제</button>
+                    <button className={styles.replyEditBtn} onClick={() => handleEdit(comment)}>수정</button>
+                    <button className={styles.replyDeleteBtn} onClick={() => handleDelete(comment.id)}>삭제</button>
                   </div>
                 )}
               </div>
@@ -342,7 +447,7 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
             {stillcutsData.map((still, idx) => (
               <div
                 className={styles.stillcutCard}
-                key={still.id || idx}
+                key={still.id ? `still-${still.id}` : `still-idx-${idx}`}
                 style={{
                   flex: `0 0 ${stillCardWidth}px`,
                   marginRight: idx !== stillcutsData.length - 1 ? `${stillCardGap}px` : 0
@@ -366,7 +471,8 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
       {/* 댓글 상세 모달 */}
       <CommentDetailModal
         open={commentDetailModalOpen}
-        onClose={() => setCommentDetailModalOpen(false)}
+        onClose={handleCloseAllModals} // 닫기(×) 버튼
+        onBack={handleDetailModalClose} // 이전(←) 버튼
         comment={selectedComment}
         reviewId={selectedReviewId}
         fetchComments={fetchComments}
@@ -391,6 +497,13 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
         parentId={null}
         isReply={true}
         onSave={handleReplySave}
+      />
+      {/* 전체 코멘트 모달 */}
+      <AllCommentsModal
+        open={allCommentsModalOpen}
+        onClose={() => setAllCommentsModalOpen(false)}
+        movieId={movieCd} // 또는 실제 id 변수명
+        onCommentClick={handleAllCommentsCommentClick}
       />
     </div>
   );
