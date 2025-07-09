@@ -54,6 +54,12 @@ h2 {
   padding: 12px 0px;
   color: #fff;
   gap: 16px;
+  transition: transform 0.18s cubic-bezier(0.4,0,0.2,1);
+  transform-origin: center left;
+}
+
+.castCard:hover {
+  transform: scale(1.06);
 }
 
 .castImg {
@@ -165,7 +171,6 @@ h2 {
   font-size: 0.9rem;
   margin-left: auto;
 }
-
 
 .replyEditBtn {
   background: #222;
@@ -429,4 +434,9 @@ h2 {
   font-size: 0.9rem;
   cursor: pointer;
   font-weight: 500;
+  transition: color 0.2s;
+}
+
+.commentSectionMore:hover {
+  color: #fff;
 }

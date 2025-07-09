@@ -11,6 +11,7 @@ import moreIcon from '../../assets/more_icon.png';
 import plusIcon_hover from '../../assets/plus_icon_hover.png';
 import commentIcon_hover from '../../assets/comment_icon_hover.png';
 import shareIcon_hover from '../../assets/share_icon_hover.png';
+import likeIconTrue from '../../assets/like_icon_true.png';
 import posterImg from '../../assets/banner1.jpg'; // 임시 포스터 이미지
 import starFull from '../../assets/star_full.svg';
 import starHalf from '../../assets/star_half.svg';
@@ -18,14 +19,14 @@ import starEmpty from '../../assets/star_empty.svg';
 import CommentModal from '../Modal/CommentModal';
 import { Bar, Line } from 'react-chartjs-2';
 import {
-  Chart as ChartJS,
-  LineElement,
-  BarElement,
-  PointElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Legend,
+    Chart as ChartJS,
+    LineElement,
+    BarElement,
+    PointElement,
+    CategoryScale,
+    LinearScale,
+    Tooltip,
+    Legend,
 } from 'chart.js';
 
 ChartJS.register(LineElement, BarElement, PointElement, CategoryScale, LinearScale, Tooltip, Legend);
@@ -46,6 +47,8 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
     const [ratingLoading, setRatingLoading] = useState(false);
     const [hasLoadedRating, setHasLoadedRating] = useState(false);
     const [ratingDist, setRatingDist] = useState(null);
+    const [isLiked, setIsLiked] = useState(false);
+    const [likeLoading, setLikeLoading] = useState(false);
     const summaryRef = useRef(null);
 
     useEffect(() => {
@@ -56,16 +59,33 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
         }
     }, [movieDetail?.description]);
 
+    // 찜 상태 설정 (movieDetail에서 받아온 likedByMe 사용)
+    useEffect(() => {
+
+        if (movieDetail?.likedByMe !== undefined) {
+            setIsLiked(movieDetail.likedByMe);
+
+        }
+    }, [movieDetail?.likedByMe]);
+
+    // movieDetail이 변경될 때도 찜 상태 업데이트
+    useEffect(() => {
+        if (movieDetail?.likedByMe !== undefined) {
+            setIsLiked(movieDetail.likedByMe);
+
+        }
+    }, [movieDetail]);
+
     // 사용자의 기존 별점 조회
     useEffect(() => {
         const fetchUserRating = async () => {
             if (!movieDetail?.movieCd || hasLoadedRating) return;
-            
+
             try {
                 const response = await fetch(`http://localhost:80/api/ratings/${movieDetail.movieCd}`, {
                     credentials: 'include',
                 });
-                
+
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.data) {
@@ -93,6 +113,7 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
     useEffect(() => {
         setHasLoadedRating(false);
         setUserRating(0);
+        setIsLiked(false);
     }, [movieDetail?.movieCd]);
 
     // 별점 분포도 불러오기
@@ -100,7 +121,7 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
         if (!movieDetail?.movieCd) return;
         fetch(`http://localhost:80/api/ratings/movie/${movieDetail.movieCd}/distribution`, {
             credentials: 'include'
-          })
+        })
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.data?.distribution) {
@@ -125,91 +146,91 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
     const chartData = ratingSteps.map(star => ratingDist ? (ratingDist[star] || 0) : 0);
 
     const data = {
-      labels: chartLabels,
-      datasets: [
-        {
-          label: '별점 분포',
-          data: chartData,
-          fill: false,
-          borderColor: '#ff3366',
-          backgroundColor: '#ff3366',
-          tension: 0.3,
-          pointRadius: 4,
-          pointBackgroundColor: '#ff3366',
-        },
-      ],
+        labels: chartLabels,
+        datasets: [
+            {
+                label: '별점 분포',
+                data: chartData,
+                fill: false,
+                borderColor: '#ff3366',
+                backgroundColor: '#ff3366',
+                tension: 0.3,
+                pointRadius: 4,
+                pointBackgroundColor: '#ff3366',
+            },
+        ],
     };
 
     const options = {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: { enabled: true },
-      },
-      scales: {
-        x: {
-          title: { display: true, text: '별점 그래프' },
-          grid: { display: false },
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true },
         },
-        y: {
-          title: { display: true, text: '인원수' },
-          beginAtZero: true,
-          ticks: { stepSize: 1, precision: 0 },
+        scales: {
+            x: {
+                title: { display: true, text: '별점 그래프' },
+                grid: { display: false },
+            },
+            y: {
+                title: { display: true, text: '인원수' },
+                beginAtZero: true,
+                ticks: { stepSize: 1, precision: 0 },
+            },
         },
-      },
     };
 
     // Bar 차트 데이터 및 옵션
     const barData = {
-      labels: chartLabels,
-      datasets: [
-        {
-          label: '별점 분포 (막대)',
-          data: chartData,
-          backgroundColor: '#ffc107',
-          borderColor: undefined, // 테두리 제거
-          borderWidth: 0,
-          borderRadius: 4,
-          barPercentage: 0.7,
-          categoryPercentage: 0.7,
-        },
-      ],
+        labels: chartLabels,
+        datasets: [
+            {
+                label: '별점 분포 (막대)',
+                data: chartData,
+                backgroundColor: '#ffc107',
+                borderColor: undefined, // 테두리 제거
+                borderWidth: 0,
+                borderRadius: 4,
+                barPercentage: 0.7,
+                categoryPercentage: 0.7,
+            },
+        ],
     };
 
     // x축 제목 동적 생성
-    const averageRating = movieDetail?.averageRating ? Number(movieDetail.averageRating).toFixed(1) : '-';
+    const averageRating = movieDetail?.averageRating && !isNaN(Number(movieDetail.averageRating)) ? Number(movieDetail.averageRating).toFixed(1) : '-';
     // 평가자 수: ratingDist 값들의 합
     const totalRaters = ratingDist ? Object.values(ratingDist).reduce((sum, v) => sum + (v || 0), 0) : 0;
     const xAxisTitle = `평균 ★${averageRating}  (${totalRaters}명)`;
 
     const barOptions = {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          enabled: true,
-          bodyColor: '#cecece', // 툴팁 본문 색상
-          titleColor: '#cecece', // 툴팁 제목 색상
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                enabled: true,
+                bodyColor: '#cecece', // 툴팁 본문 색상
+                titleColor: '#cecece', // 툴팁 제목 색상
+            },
         },
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: xAxisTitle,
-            color: '#cecece',
-            font: { size: 14 }, // 글자 크기 키움
-          },
-          ticks: { color: '#cecece' }, // x축 라벨 색상
-          grid: { display: false },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: xAxisTitle,
+                    color: '#cecece',
+                    font: { size: 14 }, // 글자 크기 키움
+                },
+                ticks: { color: '#cecece' }, // x축 라벨 색상
+                grid: { display: false },
+            },
+            y: {
+                title: { display: false },
+                beginAtZero: true,
+                ticks: { display: false },
+                grid: { display: false },
+            },
         },
-        y: {
-          title: { display: false },
-          beginAtZero: true,
-          ticks: { display: false },
-          grid: { display: false },
-        },
-      },
     };
 
     const handleCommentClick = () => {
@@ -224,6 +245,51 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
         alert('코멘트가 저장되었습니다!\n' + comment);
         setCommentModalOpen(false);
         if (onCommentSaved) onCommentSaved();
+    };
+
+    // 찜하기/취소 핸들러
+    const handleLikeToggle = async () => {
+        if (!user) {
+            alert('로그인 후 찜하기를 이용할 수 있습니다.');
+            return;
+        }
+
+        if (!movieDetail?.movieCd) {
+            alert('영화 정보가 없습니다.');
+            return;
+        }
+
+        const prevIsLiked = isLiked;
+
+        // Optimistic update
+        setIsLiked(!isLiked);
+        setLikeLoading(true);
+
+        try {
+            const method = prevIsLiked ? 'DELETE' : 'POST';
+            const response = await fetch(`http://localhost:80/api/movies/${movieDetail.movieCd}/like`, {
+                method,
+                credentials: 'include',
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                // 성공 시 상태 유지
+                alert(data.message || (prevIsLiked ? '찜이 취소되었습니다.' : '찜이 추가되었습니다.'));
+            } else {
+                // 실패 시 원래 상태로 되돌리기
+                setIsLiked(prevIsLiked);
+                alert(data.message || '찜 처리에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('찜 처리 실패:', error);
+            // 네트워크 오류 시에도 원래 상태로 되돌리기
+            setIsLiked(prevIsLiked);
+            alert('찜 처리 중 오류가 발생했습니다.');
+        } finally {
+            setLikeLoading(false);
+        }
     };
 
     // 별점 저장 API 호출 함수
@@ -248,14 +314,14 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
             });
 
             const data = await response.json();
-            
+
             if (data.success) {
                 // 별점 저장 성공 시 사용자 별점을 다시 조회하여 정확한 값 설정
                 try {
                     const ratingResponse = await fetch(`http://localhost:80/api/ratings/${movieDetail.movieCd}`, {
                         credentials: 'include',
                     });
-                    
+
                     if (ratingResponse.ok) {
                         const ratingData = await ratingResponse.json();
                         if (ratingData.success && ratingData.data) {
@@ -270,7 +336,7 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
                     console.error('별점 재조회 실패:', error);
                     setUserRating(score);
                 }
-                
+
                 alert(data.message || '별점이 저장되었습니다.');
                 // 부모 컴포넌트에 별점 저장 완료 알림
                 if (onCommentSaved) onCommentSaved();
@@ -301,7 +367,7 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
         const rect = e.target.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const score = x < rect.width / 2 ? value - 0.5 : value;
-        
+
         // 즉시 UI에 반영 (저장 중에는 이 값이 유지됨)
         setUserRating(score);
         saveRating(score);
@@ -312,7 +378,7 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
             <div className={styles.headerWrap}>
                 <div className={styles.headerLeft}>
                     <h1 className={styles.title}>
-                        {movieDetail.movieNm} <span className={styles.rating}>★ {movieDetail.averageRating}</span>
+                        {movieDetail.movieNm} <span className={styles.rating}>★ {movieDetail.averageRating && !isNaN(Number(movieDetail.averageRating)) ? Number(movieDetail.averageRating).toFixed(1) : '-'}</span>
                     </h1>
                     <div className={styles.info}>
                         <span>{movieDetail.openDt}</span> · <span>{movieDetail.genreNm}</span>
@@ -328,16 +394,16 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
                         {[...Array(5)].map((_, i) => {
                             const value = i + 1;
                             let starImg = starEmpty;
-                            
+
                             // 호버 중이면 호버 값, 아니면 실제 저장된 별점 사용
                             const currentRating = hoverRating || userRating;
-                            
+
                             if (currentRating >= value) {
                                 starImg = starFull;
                             } else if (currentRating >= value - 0.5) {
                                 starImg = starHalf;
                             }
-                            
+
                             return (
                                 <img
                                     key={i}
@@ -366,15 +432,17 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
                             <span className={styles.ratingText}>내 별점: {userRating.toFixed(1)}점</span>
                         )} */}
                     </div>
-                   
+
                     <div className={styles.actions}>
                         <div className={styles.actionItem}>
                             <button
                                 className={styles.iconBtn}
                                 onMouseEnter={() => setPlusHover(true)}
                                 onMouseLeave={() => setPlusHover(false)}
+                                onClick={handleLikeToggle}
+                                disabled={likeLoading}
                             >
-                                <img src={plusHover ? plusIcon_hover : plusIcon} alt="찜하기" />
+                                <img src={isLiked ? likeIconTrue : (plusHover ? plusIcon_hover : plusIcon)} alt="찜하기" />
                             </button>
                             <div className={styles.actionLabel}>찜</div>
                         </div>
@@ -431,15 +499,16 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
                         )}
                     </div>
                 </div>
-                <div className={styles.headerRight}>
-                    <img src={movieDetail.posterUrl || posterImg} alt="영화 포스터" className={styles.posterImg} />
-                    {/* 별점 분포도 시각화 - chart.js 막대그래프만 표시 */}
+                <div className={styles.headerMiddle}>
                     {ratingDist && (
                         <div className={styles.ratingDistWrap}>
-                            {/* <div className={styles.ratingDistTitle}>별점 그래프</div> */}
                             <Bar data={barData} options={barOptions} />
                         </div>
                     )}
+                </div>
+                <div className={styles.headerRight}>
+                    <img src={movieDetail.posterUrl || posterImg} alt="영화 포스터" className={styles.posterImg} />
+
                 </div>
             </div>
             <hr className={styles.detailDivider} />

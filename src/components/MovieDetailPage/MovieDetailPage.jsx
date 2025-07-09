@@ -54,7 +54,8 @@ export default function MovieDetailPage() {
           audienceCount: formatAudienceCount(movieData.audiAcc || movieData.totalAudience),
           directors: movieData.directors || [],
           actors: movieData.actors || [],
-          stillcuts: movieData.stillcuts || []
+          stillcuts: movieData.stillcuts || [],
+          likedByMe: movieData.likedByMe || false
         };
         
         setMovieDetail(transformedData);

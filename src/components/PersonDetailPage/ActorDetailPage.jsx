@@ -103,7 +103,7 @@ export default function ActorDetailPage() {
   };
 
   if (error) return <div>에러: {error}</div>;
-  if (!person) return <div>배우 정보를 찾을 수 없습니다.</div>;
+  if (!person) return <div></div>;
 
   function ActorCard({ actor }) {
     return (
@@ -131,20 +131,20 @@ export default function ActorDetailPage() {
           role: '배우',
           photoUrl: person.photoUrl
         }}
-         />
-         <div className={styles.likeSection}>
-        <img
-          src={likedByMe ? likeIconTrue : likeIcon}
-          alt="like"
-          className={styles.likeIcon}
-          style={{ cursor: 'pointer' }}
-          onClick={handleLikeToggle}
         />
-        <span className={styles.likeCount}>
-          {likeCount}명
-        </span>
+        <div className={styles.likeSection}>
+          <img
+            src={likedByMe ? likeIconTrue : likeIcon}
+            alt="like"
+            className={styles.likeIcon}
+            style={{ cursor: 'pointer' }}
+            onClick={handleLikeToggle}
+          />
+          <span className={styles.likeCount}>
+            {likeCount}명
+          </span>
+        </div>
       </div>
-      </div>    
       <hr className={styles.divider} />
       <div className={styles.sliderSection}>
         <h2 className={styles.sectionTitle}>출연</h2>

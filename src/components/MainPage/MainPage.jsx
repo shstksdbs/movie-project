@@ -7,6 +7,7 @@ import { useUser } from '../../contexts/UserContext';
 export default function MainPage() {
   const { user } = useUser();
   const nickname = user?.nickname || user?.name || '';
+  const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
   const [popularRatings, setPopularRatings] = useState({});
   const [comingSoonMovies, setComingSoonMovies] = useState([]);
@@ -24,17 +25,23 @@ export default function MainPage() {
       .then(data => {
         const movies = data.data || [];
         console.log('박스오피스 데이터:', movies);
-        // 별점 정보가 이미 포함되어 있다면 바로 사용
         setBoxOfficeData(movies);
       });
 
-    // 인기영화 fetch
-    fetch('http://localhost:80/data/api/popular-movies?limit=20')
+    // 평점 높은 영화 fetch
+    fetch('http://localhost:80/data/api/ratings/top-rated?limit=5')
       .then(res => res.json())
       .then(data => {
-        const movies = data.data || [];
-        // 별점 정보가 이미 포함되어 있다면 바로 사용
-        setPopularMovies(movies);
+        console.log('평점 높은 영화:', data);
+        setTopRatedMovies(data);
+      });
+
+    // 인기 영화 fetch
+    fetch('http://localhost:80/data/api/popular-movies?limit=10')
+      .then(res => res.json())
+      .then(data => {
+        console.log('인기 영화:', data);
+        setPopularMovies(data.data || []);
       });
 
     fetch('http://localhost:80/data/api/movies/coming-soon?page=0&size=20')
@@ -93,7 +100,8 @@ export default function MainPage() {
 
 
   const sections = [
-    { title: '인기 영화', key: 'popular', data: popularMovies, ratings: popularRatings },
+    { title: '평점 높은 영화', key: 'toprated', data: topRatedMovies },
+    { title: '인기 영화', key: 'popular', data: popularMovies },
     { title: '박스오피스 순위', key: 'boxoffice', data: boxOfficeData, ratings },
     { title: '개봉 예정작', key: 'upcoming', data: comingSoonMovies },
     ...(user ? [{ title: `${nickname}님이 좋아하실 영화`, key: 'like' }] : []),

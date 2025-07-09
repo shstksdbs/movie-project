@@ -9,9 +9,10 @@
 .profileSection {
   display: flex;
   align-items: flex-start;
-  gap: 32px;
   padding: 0 70px;
+  flex-direction: column;
 }
+
 
 .photo {
   width: 140px;
@@ -73,13 +74,47 @@
   margin-bottom: 12px;
 }
 
+.actorImg {
+  width: 100%;
+  height: 220px;
+  background: #aaa;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
 .actorName {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
 }
 
 .actorRole {
   font-size: 1.1rem;
   color: #bbb;
+}
+
+.likeSection {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-left: 60px;
+}
+
+.likeIcon {
+  width: 2rem;
+  height: 2rem;
+  margin-right: 3px;
+  transition: transform 0.18s cubic-bezier(0.4,0,0.2,1);
+}
+
+.likeIcon:hover {
+  transform: scale(1.08);
+}
+
+.likeCount {
+  color: #cecece;
+  font-size: 16px;
 }

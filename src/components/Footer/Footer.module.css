@@ -45,7 +45,7 @@
 .menu a {
   color: #e0e0e0;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   font-weight: 400;
 }
 
@@ -56,7 +56,8 @@
 .info {
   line-height: 1.6;
   margin-bottom: 1rem;
-  letter-spacing: 0.03em;
+  
+  font-size: 0.9rem;
 }
 
 .info p {
@@ -72,7 +73,7 @@
 
 .copy {
   color: #6b7280;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   margin-top: 0.5rem;
 }
 

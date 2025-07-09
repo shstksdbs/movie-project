@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './Header.module.css';
 import logo from '../../assets/logo.png';
 import { useUser } from '../../contexts/UserContext';
@@ -15,6 +15,7 @@ export default function Header() {
   const menuTimeout = useRef(null);
   const [showSearchModal, setShowSearchModal] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // 디버깅: 사용자 상태와 로딩 상태 추적
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function Header() {
         localStorage.removeItem('autoLogin');
         localStorage.removeItem('user');
         alert('로그아웃 성공(test).');
+        window.location.href = "http://localhost:3000/login";
       } else {
         alert(data.message || '로그아웃에 실패했습니다.');
       }
@@ -128,7 +130,7 @@ export default function Header() {
                         </div>
                       </div>
                       <div className={styles.menuDivider} />
-                      <div className={styles.menuItem}>MY</div>
+                      <div className={styles.menuItem} onClick={() => navigate('/mypage')}>MY</div>
                       <div className={styles.menuItem}>이용권 구독</div>
                       <div className={styles.menuItem}>쿠폰등록</div>
                       <div className={styles.menuItem}>고객센터</div>
@@ -143,7 +145,14 @@ export default function Header() {
           </nav>
         </div>
       </div>
-      {showSearchModal && <SearchModal onClose={() => setShowSearchModal(false)} top={64} height={'80vh'} />}
+      {showSearchModal && (
+        <SearchModal
+          open={showSearchModal}
+          onClose={() => setShowSearchModal(false)}
+          top={64}
+          height={'80vh'}
+        />
+      )}
     </header>
   );
 }

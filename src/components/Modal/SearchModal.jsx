@@ -5,7 +5,7 @@ import closeIcon from '../../assets/close_icon.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
+export default function SearchModal({ onClose, top = 64, height = '80vh', open }) {
   const [search, setSearch] = useState('');
   const [recentSearches, setRecentSearches] = useState([]);
   const [popularKeywords, setPopularKeywords] = useState([]);
@@ -27,6 +27,19 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
     else if (hour > 12) hour -= 12;
     return `${yyyy}.${MM}.${dd} ${ampm} ${String(hour).padStart(2, '0')}:${min} 기준`;
   }
+
+  useEffect(() => {
+    // 이벤트 리스너 등록
+    const handleCloseAll = () => {
+      if (open) onClose();
+    };
+    window.addEventListener('closeAllModals', handleCloseAll);
+
+    // 언마운트 시 리스너 해제
+    return () => {
+      window.removeEventListener('closeAllModals', handleCloseAll);
+    };
+  }, [open, onClose]);
 
   // 최근 검색어 불러오기
   useEffect(() => {
@@ -61,7 +74,7 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
         // 저장 후 최근 검색어 다시 불러오기
         return axios.get('http://localhost:80/api/search-history', { withCredentials: true });
       }).then(res => setRecentSearches(res.data))
-        .catch(() => {});
+        .catch(() => { });
       // 검색 결과 페이지로 이동
       navigate(`/search?query=${encodeURIComponent(search)}`);
     }
@@ -78,7 +91,7 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
       withCredentials: true
     })
       .then(() => setRecentSearches(prev => prev.filter(item => item.keyword !== keyword)))
-      .catch(() => {});
+      .catch(() => { });
   };
 
   useEffect(() => {
@@ -90,7 +103,7 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
   return (
     <div className={styles.overlay} style={{ top, height }}>
       <div className={styles.modal}>
-       
+
         <div className={styles.searchBarWrap}>
           <input
             className={styles.searchInput}
@@ -110,9 +123,9 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
             ) : (
               <ul>
                 {recentSearches.map((item, i) => (
-                  <li key={i} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <span
-                      style={{cursor: 'pointer'}}
+                      style={{ cursor: 'pointer' }}
                       onClick={() => {
                         setSearch(item.keyword);
                         // 바로 검색 실행
@@ -122,7 +135,7 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
                         }).then(() => {
                           return axios.get('http://localhost:80/api/search-history', { withCredentials: true });
                         }).then(res => setRecentSearches(res.data))
-                          .catch(() => {});
+                          .catch(() => { });
                         navigate(`/search?query=${encodeURIComponent(item.keyword)}`);
                         onClose && onClose(); // 모달 닫기
                       }}
@@ -148,9 +161,9 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
               <ol className={styles.popularList}>
                 {popularKeywords.map((item, i) => (
                   <li key={i}>
-                    <span className={styles.rank}>{i+1}</span> 
-                    <span 
-                      style={{cursor: 'pointer'}}
+                    <span className={styles.rank}>{i + 1}</span>
+                    <span
+                      style={{ cursor: 'pointer' }}
                       onClick={() => {
                         setSearch(item.keyword);
                         // 바로 검색 실행
@@ -160,7 +173,7 @@ export default function SearchModal({ onClose, top = 64, height = '80vh' }) {
                         }).then(() => {
                           return axios.get('http://localhost:80/api/search-history', { withCredentials: true });
                         }).then(res => setRecentSearches(res.data))
-                          .catch(() => {});
+                          .catch(() => { });
                         navigate(`/search?query=${encodeURIComponent(item.keyword)}`);
                       }}
                     >

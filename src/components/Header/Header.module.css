@@ -100,7 +100,7 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
   width: 280px;
   min-width: 220px;
-  z-index: 100;
+  z-index: 2001;
   padding: 18px 0 10px 0;
   opacity: 0;
   pointer-events: none;
