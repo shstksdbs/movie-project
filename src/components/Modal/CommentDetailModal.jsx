@@ -24,7 +24,11 @@ function ReplyCard({ reply, userId, onEdit, onDelete, onLike }) {
 
       <div className={styles.replyContentWrap}>
         <div className={styles.replyHeader}>
-          <img src={userIcon} alt="프로필" className={styles.replyUserIcon} />
+          <img
+            src={reply.userProfileImageUrl && reply.userProfileImageUrl.trim() !== '' ? reply.userProfileImageUrl : userIcon}
+            alt="프로필"
+            className={styles.replyUserIcon}
+          />
           <span className={styles.replyUser}>{reply.userNickname || reply.user || '익명'}</span>
           <span className={styles.replyDate}>{getRelativeDate(reply.updatedAt || reply.createdDate)}</span>
           <div className={styles.replyBtnGroup}>
@@ -88,6 +92,12 @@ const CommentDetailModal = ({ open, onClose, onBack, comment, reviewId, fetchCom
   const [localLikeStates, setLocalLikeStates] = useState({});
   // 좋아요 수를 로컬에서 관리하기 위한 상태
   const [localLikeCounts, setLocalLikeCounts] = useState({});
+
+  useEffect(() => {
+    if (open && comment) {
+      console.log('[CommentDetailModal] 전달받은 comment:', comment);
+    }
+  }, [open, comment]);
 
   // 대댓글 목록 불러오기 함수 분리
   const fetchReplies = useCallback(async () => {
@@ -324,7 +334,15 @@ const CommentDetailModal = ({ open, onClose, onBack, comment, reviewId, fetchCom
         </div>
         <div className={styles.commentCard}>
           <div className={styles.commentHeader}>
-            <span className={styles.commentUser}>{comment.userNickname || comment.user || '익명'}</span>
+            <div className={styles.commentHeaderLeft}>
+              <img
+                src={comment.userProfileImageUrl && comment.userProfileImageUrl.trim() !== '' ? comment.userProfileImageUrl : userIcon}
+                alt="프로필"
+                className={styles.commentUserProfileImage}
+              />
+              <span className={styles.commentUser}>{comment.userNickname || comment.user || '익명'}</span>
+              <span className={styles.commentDate}>{getRelativeDate(comment.updatedAt || comment.createdDate || comment.date)}</span>
+            </div>
             <span className={styles.commentRating}>★ {comment.rating ? comment.rating.toFixed(1) : '-'}</span>
           </div>
           <hr className={styles.commentDivider} />

@@ -38,7 +38,10 @@ const MyPageFooter = () => {
     setLoading(true);
     fetch(`http://localhost:80/api/users/${user.id}/my-comments`, { credentials: 'include' })
       .then(res => res.json())
-      .then(data => setMyComments(data.data || []))
+      .then(data => {
+        console.log('[MyPageFooter] 내가 작성한 코멘트 API 응답:', data.data); // ← 추가
+        setMyComments(data.data || []);
+      })
       .catch(() => setMyComments([]))
       .finally(() => setLoading(false));
   };
@@ -71,11 +74,26 @@ const MyPageFooter = () => {
   };
 
   // 코멘트 카드 클릭 핸들러
-  const handleCommentClick = (comment) => {
-    setSelectedComment({
+  const handleCommentClick = async (comment) => {
+    let mergedComment = {
       ...comment,
       userNickname: comment.authorNickname || user.nickname || '익명'
-    });
+    };
+    try {
+      if (comment.movieCd && user?.id) {
+        const res = await fetch(`http://localhost:80/api/reviews/movie/${comment.movieCd}/user/${user.id}`, { credentials: 'include' });
+        const data = await res.json();
+        if (data.success && data.data) {
+          mergedComment = {
+            ...mergedComment,
+            ...data.data // 최신 likedByMe 등 덮어쓰기
+          };
+        }
+      }
+    } catch (e) {
+      // 실패 시 기존 comment 사용
+    }
+    setSelectedComment(mergedComment);
     setModalOpen(true);
   };
 
@@ -152,7 +170,7 @@ const MyPageFooter = () => {
       </div>
       <div className={styles.commentGrid}>
         {loading ? <div>로딩 중...</div> : (
-          myComments.length === 0 ? <div>아직 코멘트가 없습니다.</div> :
+          myComments.length === 0 ? <div className={styles.emptyMessage}>아직 코멘트가 없습니다.</div> :
             myComments.slice(0, 2).map(comment => renderCommentCard(comment, true))
         )}
       </div>
@@ -163,7 +181,7 @@ const MyPageFooter = () => {
       </div>
       <div className={styles.commentGrid}>
         {likedLoading ? <div>로딩 중...</div> : (
-          likedComments.length === 0 ? <div>아직 좋아요한 코멘트가 없습니다.</div> :
+          likedComments.length === 0 ? <div className={styles.emptyMessage}>아직 좋아요한 코멘트가 없습니다.</div> :
             likedComments.slice(0, 2).map(comment => renderCommentCard(comment, false))
         )}
       </div>

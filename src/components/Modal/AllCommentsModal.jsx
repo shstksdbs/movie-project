@@ -97,6 +97,23 @@ export default function AllCommentsModal({ open, onClose, movieId, onCommentClic
       .catch(() => setLoading(false));
   }, [page, sort, open, fetchComments]);
 
+  function getRelativeDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+
+    // 오늘 날짜(연, 월, 일)만 비교
+    const dateYMD = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+    const nowYMD = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate();
+
+    if (dateYMD === nowYMD) return '오늘';
+
+    // 며칠 전 계산
+    const diffTime = now.setHours(0, 0, 0, 0) - date.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return `${diffDays}일 전`;
+  }
+
   if (!open) return null;
 
   return (
@@ -134,8 +151,15 @@ export default function AllCommentsModal({ open, onClose, movieId, onCommentClic
                   style={{ cursor: 'pointer' }}
                 >
                   <div className={styles.commentHeader}>
-                    <img src={userIcon} alt="user icon" className={styles.userIcon} />
-                    <span className={styles.commentUser}>{comment.userNickname || comment.userName || '익명'}</span>
+                    <div className={styles.commentHeaderLeft}>
+                      <img
+                        src={comment.userProfileImageUrl && comment.userProfileImageUrl.trim() !== '' ? comment.userProfileImageUrl : userIcon}
+                        alt="프로필"
+                        className={styles.commentUserProfileImage}
+                      />
+                      <span className={styles.commentUser}>{comment.userNickname || comment.user || '익명'}</span>
+                      <span className={styles.commentDate}>{getRelativeDate(comment.updatedAt || comment.createdDate || comment.date)}</span>
+                    </div>
                     <span className={styles.commentRating}>★ {comment.rating ? comment.rating.toFixed(1) : '-'}</span>
                   </div>
                   <div className={styles.commentDivider}></div>

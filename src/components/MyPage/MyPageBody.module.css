@@ -120,3 +120,11 @@
   border-top: 1.5px solid #2c323a;
   margin: 40px auto 0 auto;
 }
+
+.emptyMessage {
+  text-align: left;
+  color: #bbb;
+  font-size: 1.2rem;
+  margin: 32px 0 32px 82px;
+  
+}

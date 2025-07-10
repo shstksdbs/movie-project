@@ -372,6 +372,11 @@ export default function MovieDetailBody({ actors, directors, stillcuts, movieCd,
             >
               <div className={styles.commentHeader}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <img
+                    className={styles.commentUserProfileImage}
+                    src={comment.userProfileImageUrl && comment.userProfileImageUrl.trim() !== '' ? comment.userProfileImageUrl : userIcon}
+                    alt="프로필"
+                  />
                   <span className={styles.commentUser}>{comment.userNickname || comment.user || '익명'}</span>
                   <span className={styles.commentDate}>{formatRelativeTime(comment.updatedAt || comment.date)}</span>
                 </div>

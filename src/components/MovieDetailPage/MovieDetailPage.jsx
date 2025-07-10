@@ -32,7 +32,7 @@ export default function MovieDetailPage() {
       
       if (result.data && result.data.length > 0) {
         const movieData = result.data[0];
-        console.log('API에서 받은 영화 데이터:', movieData);
+        //console.log('API에서 받은 영화 데이터:', movieData);
         
         // API 데이터를 기존 형식에 맞게 변환
         const transformedData = {
@@ -81,7 +81,7 @@ export default function MovieDetailPage() {
       .then(data => {
         if (data.success) {
           setComments(data.data || []);
-          console.log(data.data);
+          //console.log(data.data);
         } else {
           setCommentError(data.message || '코멘트 불러오기 실패');
         }
@@ -109,14 +109,13 @@ export default function MovieDetailPage() {
   }
 
   useEffect(() => {
-    console.log('movieCd:', movieCd);
+
     if (!movieCd) return;
     
     // 페이지 진입 시 스크롤 맨 위로
     window.scrollTo(0, 0);
     
     // API에서 영화 상세 정보 조회
-    console.log('API에서 영화 상세 정보 조회');
     fetchMovieDetail();
   }, [movieCd, fetchMovieDetail]);
 

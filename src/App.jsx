@@ -18,6 +18,7 @@ import MovieDetailPage from './components/MovieDetailPage/MovieDetailPage';
 import DirectorDetailPage from './components/PersonDetailPage/DirectorDetailPage';
 import ActorDetailPage from './components/PersonDetailPage/ActorDetailPage';
 import MyPage from './components/MyPage/MyPage';
+import ProfileEditPage from './components/MyPage/ProfileEditPage';
 
 export default function App() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="/person/director/:id" element={<DirectorDetailPage />} />
             <Route path="/person/actor/:id" element={<ActorDetailPage />} />
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/profile-edit" element={<ProfileEditPage />} />
           </Routes>
         </DefaultLayout>
       </BrowserRouter>

@@ -125,7 +125,7 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.data?.distribution) {
-                    console.log(data.data.distribution);
+                    //console.log(data.data.distribution);
                     setRatingDist(data.data.distribution);
                 } else {
                     setRatingDist(null);

@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from "react";
 import styles from "./MyPageHeader.module.css";
-import userProfile from "../../assets/user_profile.png";
+import userProfile from "../../assets/user_icon.png";
 import pencilIcon from "../../assets/pencil_icon.png";
 import { useUser } from "../../contexts/UserContext";
 import TagEditModal from "./TagEditModal";
+import { useNavigate } from 'react-router-dom';
+import ProfileImageUploadModal from '../Modal/ProfileImageUploadModal';
 
 const MyPageHeader = () => {
   const { user, setUser } = useUser();
+  const navigate = useNavigate();
   console.log("MyPageHeader 유저 정보:", user); // 디버깅용
 
   // 태그 모달 상태 및 태그 상태 관리
   const [isTagModalOpen, setIsTagModalOpen] = useState(false);
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // 사용자의 선호 태그 가져오기
   useEffect(() => {
@@ -71,6 +75,8 @@ const MyPageHeader = () => {
     setIsTagModalOpen(false);
   };
 
+  const profileImageUrl = user && user.profileImageUrl ? user.profileImageUrl : userProfile;
+
   if (loading) {
     return (
       <header className={styles.header}>
@@ -89,12 +95,22 @@ const MyPageHeader = () => {
         <div className={styles.infoSection}>
           <div className={styles.leftSection}>
             <div className={styles.profileImgWrapper}>
-              <img src={userProfile} alt="프로필" className={styles.profileImg} />
+              <img src={profileImageUrl} alt="프로필" className={styles.profileImg} />
+              <span
+                className={styles.profileImgSettingIcon}
+                onClick={() => setIsProfileModalOpen(true)}
+                title="프로필 사진 변경"
+                style={{
+                  backgroundImage: `url(${require('../../assets/setting_icon.png')})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
             </div>
             <div className={styles.userInfo}>
               <div className={styles.nicknameRow}>
                 <span className={styles.nickname}>{user ? user.nickname : "닉네임"}</span>
-                <img src={pencilIcon} alt="닉네임 수정" className={styles.pencilIcon} />
+                <img src={pencilIcon} alt="닉네임 수정" className={styles.pencilIcon} style={{cursor: 'pointer'}} onClick={() => navigate('/profile-edit')} />
               </div>
               <div className={styles.followStats}>
                 팔로워 0명 · 팔로잉 0명
@@ -144,6 +160,14 @@ const MyPageHeader = () => {
           initialSelected={tags}
           onClose={() => setIsTagModalOpen(false)}
           onSave={handleSaveTags}
+        />
+      )}
+      {/* 프로필 이미지 변경 모달 */}
+      {isProfileModalOpen && (
+        <ProfileImageUploadModal
+          currentImageUrl={profileImageUrl}
+          onImageUpdate={() => window.location.reload()}
+          onClose={() => setIsProfileModalOpen(false)}
         />
       )}
     </header>

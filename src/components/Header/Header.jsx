@@ -17,15 +17,10 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 디버깅: 사용자 상태와 로딩 상태 추적
+  // user 객체 전체 디버깅용 출력
   useEffect(() => {
-    console.log('Header 렌더링 상태:', {
-      isLoading,
-      user: user ? `로그인됨 (${user.nickname})` : '로그아웃됨',
-      showProfileMenu,
-      menuVisible
-    });
-  }, [isLoading, user, showProfileMenu, menuVisible]);
+    console.log('user 전체 정보:', user);
+  }, [user]);
 
   useEffect(() => {
     setShowProfileMenu(false);
@@ -113,7 +108,12 @@ export default function Header() {
                     onMouseEnter={handleProfileEnter}
                     onMouseLeave={handleProfileLeave}
                   >
-                    <img src={userProfile} alt="프로필" className={styles.profileImg} />
+                    <img
+                      src={user.profileImageUrl && user.profileImageUrl.trim() !== '' ? user.profileImageUrl : userProfile}
+                      alt="프로필"
+                      className={styles.profileImg}
+                      onError={e => { e.target.onerror = null; e.target.src = userProfile; }}
+                    />
                     <span className={styles.nickname}>{user.nickname}</span>
                   </div>
                   {showProfileMenu && (
@@ -123,7 +123,11 @@ export default function Header() {
                       onMouseLeave={handleProfileLeave}
                     >
                       <div className={styles.profileTop}>
-                        <img src={userProfile} alt="프로필" className={styles.menuProfileImg} />
+                        <img
+                          src={user.profileImageUrl && user.profileImageUrl.trim() !== '' ? user.profileImageUrl : userProfile}
+                          alt="프로필"
+                          className={styles.menuProfileImg}
+                        />
                         <div>
                           <div className={styles.menuNickname}>{user.nickname}</div>
                           <div className={styles.menuSwitch}>프로필 전환 &gt;</div>

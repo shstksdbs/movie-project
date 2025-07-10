@@ -139,7 +139,11 @@ const MyPageBody = () => {
         {userLoading || loading ? (
           <div>로딩 중...</div>
         ) : (
-          <MovieHorizontalSlider data={likedMovies} sectionKey="like" />
+          likedMovies.length === 0 ? (
+            <div className={styles.emptyMessage}>아직 찜한 영화가 없습니다.</div>
+          ) : (
+            <MovieHorizontalSlider data={likedMovies} sectionKey="like" />
+          )
         )}
       </section>
       <hr className={styles.divider} />
@@ -148,7 +152,11 @@ const MyPageBody = () => {
         {userLoading || peopleLoading ? (
           <div>로딩 중...</div>
         ) : (
-          <ActorHorizontalSlider data={likedPeople} />
+          likedPeople.length === 0 ? (
+            <div className={styles.emptyMessage}>아직 좋아요한 인물이 없습니다.</div>
+          ) : (
+            <ActorHorizontalSlider data={likedPeople} />
+          )
         )}
       </section>
       <hr className={styles.divider} />

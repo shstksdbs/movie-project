@@ -440,3 +440,13 @@ h2 {
 .commentSectionMore:hover {
   color: #fff;
 }
+
+.commentUserProfileImage {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #222;
+  display: inline-block;
+  vertical-align: middle;
+}

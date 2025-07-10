@@ -13,6 +13,7 @@ export function UserProvider({ children }) {
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.user) {
+                    //console.log(data.user);
                     setUser(data.user);
                 } else {
                     setUser(null);

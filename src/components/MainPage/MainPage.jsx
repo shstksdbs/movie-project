@@ -24,7 +24,7 @@ export default function MainPage() {
       .then(res => res.json())
       .then(data => {
         const movies = data.data || [];
-        console.log('박스오피스 데이터:', movies);
+        //console.log('박스오피스 데이터:', movies);
         setBoxOfficeData(movies);
       });
 
@@ -32,7 +32,7 @@ export default function MainPage() {
     fetch('http://localhost:80/data/api/ratings/top-rated?limit=5')
       .then(res => res.json())
       .then(data => {
-        console.log('평점 높은 영화:', data);
+        //console.log('평점 높은 영화:', data);
         setTopRatedMovies(data);
       });
 
@@ -40,7 +40,7 @@ export default function MainPage() {
     fetch('http://localhost:80/data/api/popular-movies?limit=10')
       .then(res => res.json())
       .then(data => {
-        console.log('인기 영화:', data);
+        //console.log('인기 영화:', data);
         setPopularMovies(data.data || []);
       });
 
