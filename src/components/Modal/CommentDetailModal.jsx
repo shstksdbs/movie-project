@@ -75,7 +75,7 @@ function getRelativeDate(dateString) {
   return `${diffDays}일 전`;
 }
 // 코멘트 상세 + 대댓글 리스트 모달
-const CommentDetailModal = ({ open, onClose, onBack, comment, reviewId, fetchComments }) => {
+const CommentDetailModal = ({ open, onClose, onBack, comment, reviewId, fetchComments, fetchMyComments, fetchLikedComments }) => {
   const { user } = useUser();
   const myUserId = user?.id;
   const [localComment, setLocalComment] = useState(comment);
@@ -110,7 +110,7 @@ const CommentDetailModal = ({ open, onClose, onBack, comment, reviewId, fetchCom
       });
       const data = await res.json();
       if (data.success) {
-        console.log(data.data);
+       
         // 각 대댓글의 최신 좋아요 수를 병렬로 가져오기
         const replies = data.data || [];
         const repliesWithLikeCount = await Promise.all(
@@ -173,7 +173,6 @@ const CommentDetailModal = ({ open, onClose, onBack, comment, reviewId, fetchCom
         });
       }
       if (res.ok) {
-        // 상태 즉시 반영
         setLocalComment(prev => ({
           ...prev,
           likedByMe: !prev.likedByMe,
@@ -182,6 +181,8 @@ const CommentDetailModal = ({ open, onClose, onBack, comment, reviewId, fetchCom
             : (prev.likeCount ?? 0) + 1,
         }));
         if (fetchComments) fetchComments();
+        if (fetchMyComments) fetchMyComments();
+        if (fetchLikedComments) fetchLikedComments();
         fetchReplies();
       } else if (res.status === 401) {
         alert('로그인이 필요합니다.');

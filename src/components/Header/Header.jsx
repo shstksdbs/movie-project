@@ -91,58 +91,56 @@ export default function Header() {
             <img src={logo} alt="Filmer" />
           </Link>
           <nav className={styles.nav}>
+            {(!location.pathname.startsWith('/search')) && (
+              showSearchModal ? (
+                <button className={styles.searchCloseBtn} onClick={() => setShowSearchModal(false)}>
+                  <img src={closeIcon} alt="닫기" style={{ width: '100%', height: '100%' }} />
+                </button>
+              ) : (
+                <img src={searchIcon} alt="검색" className={styles.icon} onClick={() => setShowSearchModal(true)} />
+              )
+            )}
             {user ? (
-              <>
-                {(!location.pathname.startsWith('/search')) && (
-                  showSearchModal ? (
-                    <button className={styles.searchCloseBtn} onClick={() => setShowSearchModal(false)}>
-                      <img src={closeIcon} alt="닫기" style={{ width: '100%', height: '100%' }} />
-                    </button>
-                  ) : (
-                    <img src={searchIcon} alt="검색" className={styles.icon} onClick={() => setShowSearchModal(true)} />
-                  )
-                )}
-                <div className={styles.profileWrapper} style={{ display: 'inline-block', position: 'relative' }}>
+              <div className={styles.profileWrapper} style={{ display: 'inline-block', position: 'relative' }}>
+                <div
+                  className={styles.profileInline}
+                  onMouseEnter={handleProfileEnter}
+                  onMouseLeave={handleProfileLeave}
+                >
+                  <img
+                    src={user.profileImageUrl && user.profileImageUrl.trim() !== '' ? user.profileImageUrl : userProfile}
+                    alt="프로필"
+                    className={styles.profileImg}
+                    onError={e => { e.target.onerror = null; e.target.src = userProfile; }}
+                  />
+                  <span className={styles.nickname}>{user.nickname}</span>
+                </div>
+                {showProfileMenu && (
                   <div
-                    className={styles.profileInline}
+                    className={`${styles.profileMenu} ${menuVisible ? styles.menuShow : styles.menuHide}`}
                     onMouseEnter={handleProfileEnter}
                     onMouseLeave={handleProfileLeave}
                   >
-                    <img
-                      src={user.profileImageUrl && user.profileImageUrl.trim() !== '' ? user.profileImageUrl : userProfile}
-                      alt="프로필"
-                      className={styles.profileImg}
-                      onError={e => { e.target.onerror = null; e.target.src = userProfile; }}
-                    />
-                    <span className={styles.nickname}>{user.nickname}</span>
-                  </div>
-                  {showProfileMenu && (
-                    <div
-                      className={`${styles.profileMenu} ${menuVisible ? styles.menuShow : styles.menuHide}`}
-                      onMouseEnter={handleProfileEnter}
-                      onMouseLeave={handleProfileLeave}
-                    >
-                      <div className={styles.profileTop}>
-                        <img
-                          src={user.profileImageUrl && user.profileImageUrl.trim() !== '' ? user.profileImageUrl : userProfile}
-                          alt="프로필"
-                          className={styles.menuProfileImg}
-                        />
-                        <div>
-                          <div className={styles.menuNickname}>{user.nickname}</div>
-                          <div className={styles.menuSwitch}>프로필 전환 &gt;</div>
-                        </div>
+                    <div className={styles.profileTop}>
+                      <img
+                        src={user.profileImageUrl && user.profileImageUrl.trim() !== '' ? user.profileImageUrl : userProfile}
+                        alt="프로필"
+                        className={styles.menuProfileImg}
+                      />
+                      <div>
+                        <div className={styles.menuNickname}>{user.nickname}</div>
+                        <div className={styles.menuSwitch}>프로필 전환 &gt;</div>
                       </div>
-                      <div className={styles.menuDivider} />
-                      <div className={styles.menuItem} onClick={() => navigate('/mypage')}>MY</div>
-                      <div className={styles.menuItem}>이용권 구독</div>
-                      <div className={styles.menuItem}>쿠폰등록</div>
-                      <div className={styles.menuItem}>고객센터</div>
-                      <div className={styles.menuItem} onClick={handleLogout}>로그아웃</div>
                     </div>
-                  )}
-                </div>
-              </>
+                    <div className={styles.menuDivider} />
+                    <div className={styles.menuItem} onClick={() => navigate(`/mypage/${user.id}`)}>MY</div>
+                    <div className={styles.menuItem}>이용권 구독</div>
+                    <div className={styles.menuItem}>쿠폰등록</div>
+                    <div className={styles.menuItem}>고객센터</div>
+                    <div className={styles.menuItem} onClick={handleLogout}>로그아웃</div>
+                  </div>
+                )}
+              </div>
             ) : (
               <Link to="/login">로그인</Link>
             )}

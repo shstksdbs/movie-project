@@ -185,7 +185,7 @@
   text-align: left;
   color: #bbb;
   font-size: 1.2rem;
-  margin: 32px 0 32px 82px;
+  margin: 32px 0 32px 15px;
 }
 
 .commentActions {
@@ -231,4 +231,11 @@
 .replyDeleteBtn:hover {
   background: #ff4d4f;
   color: #fff;
+}
+
+.profileImage {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
 }

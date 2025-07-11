@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import styles from './ProfileImageUploadModal.module.css';
 
@@ -6,11 +6,21 @@ const ProfileImageUploadModal = ({ currentImageUrl, onImageUpdate, onClose }) =>
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState('');
   const fileInputRef = useRef(null);
 
+
+  // 모달이 열릴 때마다 currentImageUrl을 previewUrl로 설정
+  useEffect(() => {
+    setPreviewUrl(currentImageUrl);
+  }, [currentImageUrl]);
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
-    if (!file) return;
+    if (!file) {
+      setSelectedFileName('');
+      return;
+    }
+    setSelectedFileName(file.name);
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     if (!validTypes.includes(file.type)) {
       setError('지원하지 않는 이미지 형식입니다. (jpg, jpeg, png, gif, webp만 가능)');
@@ -44,7 +54,7 @@ const ProfileImageUploadModal = ({ currentImageUrl, onImageUpdate, onClose }) =>
       });
       if (response.data.success) {
         onImageUpdate(response.data.imageUrl);
-        setPreviewUrl(null);
+        //setPreviewUrl(null);
         fileInputRef.current.value = '';
         alert('프로필 이미지가 업로드되었습니다.');
         onClose && onClose();
@@ -98,11 +108,25 @@ const ProfileImageUploadModal = ({ currentImageUrl, onImageUpdate, onClose }) =>
           <span className={styles.profileImageUploadModalClose} onClick={onClose}>&times;</span>
         </div>
         <div className={styles.imagePreview}>
-          <img
-            src={previewUrl || getImageUrl(currentImageUrl) || '/placeholder-actor.png'}
-            alt="프로필 이미지"
-            className={styles.profileImage}
-          />
+          {previewUrl ? (
+            <img
+              src={previewUrl}
+              alt="프로필 이미지 미리보기"
+              className={styles.profileImage}
+            />
+          ) : currentImageUrl && selectedFileName ? (
+            <img
+              src={getImageUrl(currentImageUrl)}
+              alt="프로필 이미지"
+              className={styles.profileImage}
+            />
+          ) : (
+            <img
+              src={require('../../assets/user_icon.png')}
+              alt="기본 프로필 이미지"
+              className={styles.profileImage}
+            />
+          )}
         </div>
         <div className={styles.uploadControls}>
           <div className={styles.fileInputWrapper}>
@@ -112,7 +136,14 @@ const ProfileImageUploadModal = ({ currentImageUrl, onImageUpdate, onClose }) =>
               accept="image/*"
               onChange={handleFileSelect}
               className={styles.fileInput}
+              id="profile-image-upload-input"
             />
+            <label htmlFor="profile-image-upload-input" className={styles.customFileButton}>
+              파일 선택
+            </label>
+            <span className={styles.selectedFileName}>
+              {selectedFileName || '선택된 파일 없음'}
+            </span>
           </div>
           <div className={styles.buttonGroup}>
             <button

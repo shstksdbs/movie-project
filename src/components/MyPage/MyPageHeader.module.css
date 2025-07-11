@@ -21,7 +21,7 @@
   height: 10rem;
   border-radius: 12px;
   overflow: hidden;
-  background: #222;
+  background: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,6 +115,37 @@
   font-size: 1.1rem;
   color: #aaa;
   font-weight: 400;
+}
+
+.followButton {
+  width: 170px;
+  height: 36px;
+  border: none;
+  border-radius: 18px;
+  background: #eeb60f;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.followButton:hover {
+  background: #FFC107;
+}
+
+.followButton:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+
+.followButton.following {
+  background: #393939;
+}
+
+.followButton.following:hover {
+  background: #4b4b4b;
 }
 
 .pencilIcon {

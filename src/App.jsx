@@ -40,7 +40,7 @@ export default function App() {
             <Route path="/movie-detail/:movieCd" element={<MovieDetailPage />} />
             <Route path="/person/director/:id" element={<DirectorDetailPage />} />
             <Route path="/person/actor/:id" element={<ActorDetailPage />} />
-            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/mypage/:userId" element={<MyPage />} />
             <Route path="/profile-edit" element={<ProfileEditPage />} />
           </Routes>
         </DefaultLayout>

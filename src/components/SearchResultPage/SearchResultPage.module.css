@@ -155,3 +155,83 @@
     font-size: 1rem;
     color: #bbb;
 }
+
+/* 유저 카드 */
+.userCard {
+    width: 180px;
+    height: 260px;
+    background: var(--color-bg);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    transition: transform 0.18s cubic-bezier(0.4,0,0.2,1);
+    cursor: pointer;
+    padding: 20px 0 16px 0;
+}
+
+.userCard:hover {
+    transform: scale(1.08);
+}
+
+.userImg {
+    width: 120px;
+    height: 120px;
+    background: #aaa;
+    border-radius: 50%;
+    margin-bottom: 12px;
+}
+
+.userName {
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.userFollowStats {
+    font-size: 0.9rem;
+    color: #bbb;
+    text-align: center;
+    padding: 0 10px;
+    margin-bottom: 12px;
+}
+
+.followButton {
+    width: 80%;
+    height: 32px;
+    border: none;
+    border-radius: 16px;
+    background: #007bff;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: auto;
+}
+
+.followButton:hover {
+    background: #0056b3;
+}
+
+.followButton:disabled {
+    background: #666;
+    cursor: not-allowed;
+}
+
+.followButton.following {
+    background: #6c757d;
+}
+
+.followButton.following:hover {
+    background: #545b62;
+}
+
+.emptyMessage {
+    text-align: left;
+    color: #bbb;
+    font-size: 1.2rem;
+    margin: 32px 0 32px 82px;
+}

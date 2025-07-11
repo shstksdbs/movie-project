@@ -86,7 +86,7 @@ function ActorHorizontalSlider({ data }) {
 
 // 더미 likedMovies 제거
 
-const MyPageBody = () => {
+const MyPageBody = ({ targetUserId, tempUserInfo }) => {
   const { user, isLoading: userLoading } = useUser();
   const [likedMovies, setLikedMovies] = useState([]);
   const [likedActors, setLikedActors] = useState([]);
@@ -94,36 +94,58 @@ const MyPageBody = () => {
   const [loading, setLoading] = useState(true);
   const [actorsLoading, setActorsLoading] = useState(true);
   const [directorsLoading, setDirectorsLoading] = useState(true);
+  const [localTempUserInfo, setLocalTempUserInfo] = useState(tempUserInfo);
+
+  // sessionStorage에서 tempUserInfo 확인 (새로고침 시에도 유지)
+  useEffect(() => {
+    const storedUserInfo = sessionStorage.getItem('tempUserInfo');
+    if (storedUserInfo) {
+      try {
+        const userInfo = JSON.parse(storedUserInfo);
+        setLocalTempUserInfo(userInfo);
+        
+      } catch (error) {
+        console.error('임시 유저 정보 파싱 실패:', error);
+      }
+    }
+  }, []);
+
+  // 표시할 유저 결정 (내 마이페이지면 tempUserInfo 무시)
+  const isOwnPage = String(targetUserId || user?.id) === String(user?.id);
+  const displayUserId = isOwnPage ? user?.id : (localTempUserInfo ? localTempUserInfo.id : (targetUserId || user?.id));
+  const displayUser = isOwnPage ? user : (localTempUserInfo || user);
+
+  
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!displayUserId) return;
     setLoading(true);
-    fetch(`http://localhost:80/api/users/${user.id}/liked-movies`)
+    fetch(`http://localhost:80/api/users/${displayUserId}/liked-movies`)
       .then(res => res.json())
       .then(data => setLikedMovies(data.data || []))
       .catch(() => setLikedMovies([]))
       .finally(() => setLoading(false));
-  }, [user?.id]);
+  }, [displayUserId]);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!displayUserId) return;
     setDirectorsLoading(true);
-    fetch(`http://localhost:80/api/users/${user.id}/liked-directors`)
+    fetch(`http://localhost:80/api/users/${displayUserId}/liked-directors`)
       .then(res => res.json())
       .then(data => setLikedDirectors(data.data || []))
       .catch(() => setLikedDirectors([]))
       .finally(() => setDirectorsLoading(false));
-  }, [user?.id]);
+  }, [displayUserId]);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!displayUserId) return;
     setActorsLoading(true);
-    fetch(`http://localhost:80/api/users/${user.id}/liked-actors`)
+    fetch(`http://localhost:80/api/users/${displayUserId}/liked-actors`)
       .then(res => res.json())
       .then(data => setLikedActors(data.data || []))
       .catch(() => setLikedActors([]))
       .finally(() => setActorsLoading(false));
-  }, [user?.id]);
+  }, [displayUserId]);
 
   // 배우와 감독을 합쳐서 전달 (role 추가)
   const likedPeople = [
@@ -135,12 +157,16 @@ const MyPageBody = () => {
   return (
     <main className={styles.body}>
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>내가 찜한 영화</h2>
+        <h2 className={styles.sectionTitle}>
+          {isOwnPage ? '내가 찜한 영화' : `${displayUser?.nickname}님이 찜한 영화`}
+        </h2>
         {userLoading || loading ? (
           <div>로딩 중...</div>
         ) : (
           likedMovies.length === 0 ? (
-            <div className={styles.emptyMessage}>아직 찜한 영화가 없습니다.</div>
+            <div className={styles.emptyMessage}>
+              {isOwnPage ? '아직 찜한 영화가 없습니다.' : '아직 찜한 영화가 없습니다.'}
+            </div>
           ) : (
             <MovieHorizontalSlider data={likedMovies} sectionKey="like" />
           )
@@ -148,12 +174,16 @@ const MyPageBody = () => {
       </section>
       <hr className={styles.divider} />
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>내가 좋아요한 인물</h2>
+        <h2 className={styles.sectionTitle}>
+          {isOwnPage ? '내가 좋아요한 인물' : `${displayUser?.nickname}님이 좋아요한 인물`}
+        </h2>
         {userLoading || peopleLoading ? (
           <div>로딩 중...</div>
         ) : (
           likedPeople.length === 0 ? (
-            <div className={styles.emptyMessage}>아직 좋아요한 인물이 없습니다.</div>
+            <div className={styles.emptyMessage}>
+              {isOwnPage ? '아직 좋아요한 인물이 없습니다.' : '아직 좋아요한 인물이 없습니다.'}
+            </div>
           ) : (
             <ActorHorizontalSlider data={likedPeople} />
           )
