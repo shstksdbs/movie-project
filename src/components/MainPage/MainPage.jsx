@@ -27,40 +27,72 @@ export default function MainPage() {
 
   useEffect(() => {
     fetch('http://localhost:80/data/api/box-office-dto?page=0&size=20')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         const movies = data.data || [];
         //console.log('박스오피스 데이터:', movies);
         setBoxOfficeData(movies);
+      })
+      .catch(error => {
+        console.error('박스오피스 데이터 로드 실패:', error);
+        setBoxOfficeData([]);
       });
 
     // 평점 높은 영화 fetch
     fetch('http://localhost:80/data/api/ratings/top-rated?limit=5')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         //console.log('평점 높은 영화:', data);
         setTopRatedMovies(data);
+      })
+      .catch(error => {
+        console.error('평점 높은 영화 로드 실패:', error);
+        setTopRatedMovies([]);
       });
 
     // 인기 영화 fetch
-    fetch('http://localhost:80/data/api/popular-movies?limit=10')
-      .then(res => res.json())
-      .then(data => {
-        //console.log('인기 영화:', data);
-        setPopularMovies(data.data || []);
-      });
+    // fetch('http://localhost:80/data/api/popular-movies?limit=10')
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     //console.log('인기 영화:', data);
+    //     setPopularMovies(data.data || []);
+    //   });
 
     fetch('http://localhost:80/data/api/movies/coming-soon?page=0&size=20')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         const movies = data.data || [];
         setComingSoonMovies(movies);
         //console.log('개봉예정작 API 응답:', data);
 
+      })
+      .catch(error => {
+        console.error('개봉예정작 로드 실패:', error);
+        setComingSoonMovies([]);
       });
 
     fetch('http://localhost:80/api/person/recommended-actor')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.success && data.data) {
           setActorInfo(data.data.actor); // 배우 정보
@@ -78,10 +110,20 @@ export default function MainPage() {
 
           setActorMovies(enrichedMovies);
         }
+      })
+      .catch(error => {
+        console.error('배우 추천 영화 로드 실패:', error);
+        setActorMovies([]);
+        setActorInfo(null);
       });
 
     fetch('http://localhost:80/api/person/recommended-director')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.success && data.data) {
           setDirectorInfo(data.data.director); // 감독 정보
@@ -99,6 +141,11 @@ export default function MainPage() {
 
           setDirectorMovies(enrichedMovies);
         }
+      })
+      .catch(error => {
+        console.error('감독 추천 영화 로드 실패:', error);
+        setDirectorMovies([]);
+        setDirectorInfo(null);
       });
 
   }, []);
@@ -109,29 +156,57 @@ export default function MainPage() {
       fetch(`http://localhost:80/api/users/${user.id}/recommended-movies`, {
         credentials: 'include'
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
         .then(data => {
           
           setRecommendedMovies(data);
+        })
+        .catch(error => {
+          console.error('사용자 추천 영화 로드 실패:', error);
+          setRecommendedMovies({});
         });
       // 소셜 추천 영화 fetch
       fetch(`http://localhost:80/api/users/${user.id}/daily-social-recommendation`, {
         credentials: 'include'
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
         .then(data => {
           //console.log("소셜 추천 영화 API 응답:", data.movies);
           setSocialRecommendedMovies(Array.isArray(data.movies) ? data.movies : []);
           setSocialRecommender(data.recommender || null); // 추가
+        })
+        .catch(error => {
+          console.error('소셜 추천 영화 로드 실패:', error);
+          setSocialRecommendedMovies([]);
+          setSocialRecommender(null);
         });
       // 새로운 장르 추천 fetch
       fetch(`http://localhost:80/api/users/${user.id}/new-genre-recommendation`, {
         credentials: 'include'
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
         .then(data => {
-          console.log("새로운 장르 추천 API 응답:", data);
+          //console.log("새로운 장르 추천 API 응답:", data);
           setNewGenreRecommendations(Array.isArray(data.genres) ? data.genres : []);
+        })
+        .catch(error => {
+          console.error('새로운 장르 추천 로드 실패:', error);
+          setNewGenreRecommendations([]);
         });
     } else {
       setRecommendedMovies({});
@@ -157,7 +232,7 @@ export default function MainPage() {
 
   const sections = [
     { title: '평점 높은 영화', key: 'toprated', data: topRatedMovies },
-    { title: '인기 영화', key: 'popular', data: popularMovies },
+    // { title: '인기 영화', key: 'popular', data: popularMovies },
     { title: '박스오피스 순위', key: 'boxoffice', data: boxOfficeData, ratings },
     { title: '개봉 예정작', key: 'upcoming', data: comingSoonMovies },
     // 선호 태그별 추천 영화 섹션 추가

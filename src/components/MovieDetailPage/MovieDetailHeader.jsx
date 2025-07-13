@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './MovieDetailHeader.module.css';
 import { useUser } from '../../contexts/UserContext';
 
@@ -34,6 +35,7 @@ ChartJS.register(LineElement, BarElement, PointElement, CategoryScale, LinearSca
 
 const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }) => {
     const { user } = useUser();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showMore, setShowMore] = useState(false);
@@ -245,6 +247,11 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
         alert('코멘트가 저장되었습니다!\n' + comment);
         setCommentModalOpen(false);
         if (onCommentSaved) onCommentSaved();
+    };
+
+    // 예매 버튼 클릭 핸들러
+    const handleBookingClick = () => {
+        navigate(`/booking/${movieDetail.movieCd}`);
     };
 
     // 찜하기/취소 핸들러
@@ -508,7 +515,12 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
                 </div>
                 <div className={styles.headerRight}>
                     <img src={movieDetail.posterUrl || posterImg} alt="영화 포스터" className={styles.posterImg} />
-
+                    <button
+                        className={styles.bookingButton}
+                        onClick={handleBookingClick}
+                    >
+                        예매하기
+                    </button>
                 </div>
             </div>
             <hr className={styles.detailDivider} />

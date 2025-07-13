@@ -68,7 +68,7 @@ export default function MovieHorizontalSlider({ data, sectionKey, ratings, actor
       >
         {movies.map((movie, idx) => (
           <Card
-            key={movie.movieCd || movie.id || idx}
+          key={`${movie.movieCd || movie.id || 'movie'}-${idx}`}
             {...(sectionKey === 'person' ? { person: movie } :
               sectionKey === 'comment' ? { comment: movie } :
                 sectionKey === 'similar' ? { movie } :

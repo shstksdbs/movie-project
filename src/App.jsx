@@ -19,6 +19,7 @@ import DirectorDetailPage from './components/PersonDetailPage/DirectorDetailPage
 import ActorDetailPage from './components/PersonDetailPage/ActorDetailPage';
 import MyPage from './components/MyPage/MyPage';
 import ProfileEditPage from './components/MyPage/ProfileEditPage';
+import BookingPage from './components/BookingPage/BookingPage';
 
 export default function App() {
   return (
@@ -33,11 +34,12 @@ export default function App() {
             <Route path="/social-join" element={<FilmerExtraInfoPage />} />
             <Route path="/find-id" element={<FindIdPage />} />
             <Route path="/find-id-result" element={<FindIdResultPage />} />
-            <Route path="/find-password" element={<FindPasswordPage />} />
+            <Route path="/find-pw" element={<FindPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/" element={<MainPage />} />
             <Route path="/search" element={<SearchResultPage />} />
             <Route path="/movie-detail/:movieCd" element={<MovieDetailPage />} />
+            <Route path="/booking/:movieId" element={<BookingPage />} />
             <Route path="/person/director/:id" element={<DirectorDetailPage />} />
             <Route path="/person/actor/:id" element={<ActorDetailPage />} />
             <Route path="/mypage/:userId" element={<MyPage />} />
