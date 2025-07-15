@@ -25,6 +25,11 @@ export default function MainPage() {
   const [mainSocialRecommender, setMainSocialRecommender] = useState(null); // 추가
   const [newGenreRecommendations, setNewGenreRecommendations] = useState([]); // 추가
 
+  // 페이지 로드 시 맨 위로 스크롤
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     fetch('http://localhost:80/data/api/box-office-dto?page=0&size=20')
       .then(res => {
@@ -138,7 +143,7 @@ export default function MainPage() {
             companyNm: movie.companyNm || '',
             directorName: movie.directorName || ''
           }));
-
+          console.log('감독 추천 영화:', enrichedMovies);
           setDirectorMovies(enrichedMovies);
         }
       })
@@ -201,7 +206,7 @@ export default function MainPage() {
           return res.json();
         })
         .then(data => {
-          //console.log("새로운 장르 추천 API 응답:", data);
+          console.log("새로운 장르 추천 API 응답:", data);
           setNewGenreRecommendations(Array.isArray(data.genres) ? data.genres : []);
         })
         .catch(error => {
@@ -218,17 +223,28 @@ export default function MainPage() {
   }, [user]);
 
 
-  // 새로운 장르 추천 영화(장르별 1개 + pool에서 2개 랜덤) 추출
-  const genreOneMovies = newGenreRecommendations
-    .map(genreObj => (Array.isArray(genreObj.movies) && genreObj.movies.length > 0 ? genreObj.movies[0] : null))
-    .filter(Boolean);
-  const allMoviesPool = newGenreRecommendations.flatMap(genreObj => Array.isArray(genreObj.movies) ? genreObj.movies : []);
-  const usedMovieCds = new Set(genreOneMovies.map(m => m.movieCd));
-  const extraMovies = allMoviesPool
-    .filter(m => !usedMovieCds.has(m.movieCd))
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 2);
-  const finalNewGenreMovies = [...genreOneMovies, ...extraMovies].slice(0, 20);
+  // 새로운 장르 추천 영화 - 21개 장르 중 20개 랜덤 선택, 장르당 1개씩 (중복 제거)
+  const shuffledGenres = [...newGenreRecommendations]
+    .sort(() => Math.random() - 0.5) // 장르 배열을 랜덤하게 섞기
+    .slice(0, 20); // 상위 20개 장르 선택
+    
+  // 중복 제거를 위한 Set 사용
+  const seenMovieCds = new Set();
+  const finalNewGenreMovies = shuffledGenres
+    .map(genreObj => {
+      if (!Array.isArray(genreObj.movies) || genreObj.movies.length === 0) return null;
+      
+      // 해당 장르의 영화들 중에서 아직 사용되지 않은 첫 번째 영화 찾기
+      const availableMovie = genreObj.movies.find(movie => !seenMovieCds.has(movie.movieCd));
+      
+      if (availableMovie) {
+        seenMovieCds.add(availableMovie.movieCd);
+        return availableMovie;
+      }
+      
+      return null;
+    })
+    .filter(Boolean); // null 값 제거
 
   const sections = [
     { title: '평점 높은 영화', key: 'toprated', data: topRatedMovies },

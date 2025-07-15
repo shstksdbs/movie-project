@@ -36,7 +36,7 @@ export default function FindPasswordPage() {
     return (
         <div className="pageWrapper">
             <div className={styles.outer}>
-                <h2 className={styles.heading}>비밀번호 찾기</h2>
+                <h3 className={styles.heading}>비밀번호 찾기</h3>
                 <p className={styles.descSub2}>
                     아이디와 이메일을 입력해 주세요. 아이디에 등록된 이메일주소로 비밀번호<br></br>재설정을 위한 인증 메일이 발송됩니다.
                     회원님의 이메일을 확인하신 후, 12시간<br></br>이내에 비밀번호 재설정을 완료해 주세요.

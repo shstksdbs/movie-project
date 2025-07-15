@@ -4,6 +4,7 @@ import styles from './DirectorDetailPage.module.css';
 import likeIcon from '../../assets/like_icon.png';
 import likeIconTrue from '../../assets/like_icon_true.png';
 import MovieHorizontalSlider from '../MainPage/MovieHorizontalSlider';
+import userIcon from '../../assets/user_icon.png';
 
 export default function DirectorDetailPage() {
   const { id } = useParams();
@@ -105,14 +106,13 @@ export default function DirectorDetailPage() {
   function DirectorCard({ director }) {
     return (
       <div className={styles.actorCard}>
-        <div
-          className={styles.actorImg}
-          style={{
-            backgroundImage: director.photoUrl ? `url(${director.photoUrl})` : 'none',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        ></div>
+        <div className={styles.actorImg}>
+          <img
+            src={director.photoUrl ? director.photoUrl : userIcon}
+            alt={director.name}
+            className={styles.actorPhoto}
+          />
+        </div>
         <div className={styles.actorName}>{director.name}</div>
         <div className={styles.actorRole}>{director.role}</div>
       </div>

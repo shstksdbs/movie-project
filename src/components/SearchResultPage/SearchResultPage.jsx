@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import MovieCard from '../MainPage/MovieCard';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import userIcon from '../../assets/user_icon.png';
 
 function ActorCard({ actor }) {
   const personLink = actor.role === '감독'
@@ -73,7 +74,7 @@ function UserCard({ user, onUserClick }) {
       <div
         className={styles.userImg}
         style={{
-          backgroundImage: user.profileImageUrl ? `url(${user.profileImageUrl})` : 'none',
+          backgroundImage: `url(${user.photoUrl ? user.photoUrl : userIcon})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}

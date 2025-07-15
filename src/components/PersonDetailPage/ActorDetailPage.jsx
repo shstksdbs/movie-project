@@ -7,6 +7,7 @@ import previousIcon from '../../assets/previous_icon.png';
 import nextIcon from '../../assets/next_icon.png';
 import MovieCard from '../MainPage/MovieCard';
 import MovieHorizontalSlider from '../MainPage/MovieHorizontalSlider';
+import userIcon from '../../assets/user_icon.png';
 
 export default function ActorDetailPage() {
   const { id } = useParams();
@@ -108,14 +109,13 @@ export default function ActorDetailPage() {
   function ActorCard({ actor }) {
     return (
       <div className={styles.actorCard}>
-        <div
-          className={styles.actorImg}
-          style={{
-            backgroundImage: actor.photoUrl ? `url(${actor.photoUrl})` : 'none',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        ></div>
+        <div className={styles.actorImg}>
+          <img
+            src={actor.photoUrl ? actor.photoUrl : userIcon}
+            alt={actor.name}
+            className={styles.actorPhoto}
+          />
+        </div>
         <div className={styles.actorName}>{actor.name}</div>
         <div className={styles.actorRole}>{actor.role}</div>
       </div>

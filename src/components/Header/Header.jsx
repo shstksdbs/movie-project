@@ -129,13 +129,12 @@ export default function Header() {
                       />
                       <div>
                         <div className={styles.menuNickname}>{user.nickname}</div>
-                        <div className={styles.menuSwitch}>프로필 전환 &gt;</div>
+                        {/* <div className={styles.menuSwitch}>프로필 전환 &gt;</div> */}
                       </div>
                     </div>
                     <div className={styles.menuDivider} />
                     <div className={styles.menuItem} onClick={() => navigate(`/mypage/${user.id}`)}>MY</div>
-                    <div className={styles.menuItem}>이용권 구독</div>
-                    <div className={styles.menuItem}>쿠폰등록</div>
+                    <div className={styles.menuItem}>예매정보</div>
                     <div className={styles.menuItem}>고객센터</div>
                     <div className={styles.menuItem} onClick={handleLogout}>로그아웃</div>
                   </div>

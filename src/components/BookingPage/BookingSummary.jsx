@@ -3,40 +3,29 @@ import styles from "./BookingPage.module.css";
 
 const BookingSummary = ({
   movieInfo,
+  selectedCinema,
   selectedTheater,
-  selectedDate,
   selectedTime,
   selectedSeats,
 }) => {
   if (!movieInfo) return null;
 
-  // 날짜 라벨 변환
-  const dateLabelMap = {
-    "2024-01-15": "1월 15일 (월)",
-    "2024-01-16": "1월 16일 (화)",
-    "2024-01-17": "1월 17일 (수)",
-    "2024-01-18": "1월 18일 (목)",
-    "2024-01-19": "1월 19일 (금)",
-  };
-
   return (
     <div className={styles.bookingSummary}>
       <div className={styles.summaryPoster}>
-        <img src={movieInfo.poster} alt={movieInfo.title} />
+        <img src={movieInfo.posterUrl || movieInfo.poster || '/default_poster.png'} alt={movieInfo.title || movieInfo.movieNm} />
       </div>
       <div className={styles.summaryInfo}>
-        <div className={styles.summaryTitle}>{movieInfo.title}</div>
-        <div className={styles.summaryMeta}>
-          <span>{movieInfo.duration}</span>
-          <span>{movieInfo.rating}</span>
-          <span>{movieInfo.genre}</span>
-        </div>
+        <div className={styles.summaryTitle}>{movieInfo.title || movieInfo.movieNm}</div>
         <div className={styles.summaryDetail}>
           <div>
-            <b>극장</b> {selectedTheater || "-"}
+            <b>영화관</b> {selectedCinema || "-"}
           </div>
           <div>
-            <b>일시</b> {dateLabelMap[selectedDate] || "-"} {selectedTime || ""}
+            <b>상영관</b> {selectedTheater || "-"}
+          </div>
+          <div>
+            <b>시간</b> {selectedTime || "-"}
           </div>
           <div>
             <b>좌석</b> {selectedSeats.length > 0 ? selectedSeats.join(", ") : "-"}

@@ -91,7 +91,7 @@ export default function LoginPage() {
       <div className={styles.findRow}>
         <span>아이디/비밀번호를 잊으셨나요?</span>
         <Link to="/find-id" className={styles.findLink}>아이디 찾기</Link>
-        <Link to="/find-password" className={styles.findLink}>비밀번호 찾기</Link>
+        <Link to="/find-pw" className={styles.findLink}>비밀번호 찾기</Link>
       </div>
     </div>
   );

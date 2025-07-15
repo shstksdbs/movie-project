@@ -251,7 +251,7 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
 
     // 예매 버튼 클릭 핸들러
     const handleBookingClick = () => {
-        navigate(`/booking/${movieDetail.movieCd}`);
+        navigate(`/booking/${movieDetail.movieCd}`, { state: { movieDetail } });
     };
 
     // 찜하기/취소 핸들러
@@ -506,7 +506,12 @@ const MovieDetailHeader = ({ movieDetail, onCommentSaved, onRefreshMovieDetail }
                         )}
                     </div>
                 </div>
-                <div className={styles.headerMiddle}>
+                <div 
+                    className={styles.headerMiddle}
+                    style={{ 
+                        top: showMore ? '125px' : '145px'
+                    }}
+                >
                     {ratingDist && (
                         <div className={styles.ratingDistWrap}>
                             <Bar data={barData} options={barOptions} />

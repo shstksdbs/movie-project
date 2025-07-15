@@ -74,7 +74,8 @@
   margin-bottom: 14px;
 }
 .paymentMethodList {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 32px;
 }
@@ -97,22 +98,68 @@
 .paymentAgreement {
   margin-bottom: 24px;
 }
-.paymentAgreement label {
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
+  margin-bottom: 12px;
 }
+
+.bigCheckIcon {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
 .paymentAgreementList {
-  margin: 12px 0 0 0;
-  padding-left: 18px;
+  margin: 8px 0 0 0;
   color: #b0b8c1;
   font-size: 15px;
+  list-style: none;
+  margin-left: 4px;
+}
+
+.paymentAgreementList li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 4px;
+  padding: 4px 0;
+}
+
+.paymentAgreementList li img {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.paymentAgreementList li span {
+  color: #b0b8c1;
+  font-size: 14px;
 }
 .paymentNotice {
   color: #b0b8c1;
   font-size: 13px;
   margin-bottom: 32px;
   line-height: 1.7;
+}
+
+/* ScrollbarsCustom 스크롤바 숨기기 */
+
+
+:global(.ScrollbarsCustom-ThumbX) {
+  background: transparent !important;
+}
+
+:global(.ScrollbarsCustom-Track) {
+  background: transparent !important;
+}
+
+:global(.ScrollbarsCustom-TrackX) {
+  background: transparent !important;
 }
 .paymentButtonContainer {
   display: flex;
@@ -126,11 +173,11 @@
   border: 1.5px solid #fff;
   border-radius: 8px;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 500;
   padding: 16px 0;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
-  height: 54px;
+  
 }
 .cancelButton:hover:not(:disabled) {
   background: #23232b;
@@ -142,12 +189,22 @@
   border: none;
   border-radius: 8px;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 500;
   padding: 16px 0;
   cursor: pointer;
   transition: background 0.2s;
-  height: 54px;
+  
 }
 .bookingButton:hover:not(:disabled) {
-  background: #d50032;
+  background: #23232b;
+}
+
+.bookingButton:disabled {
+  background: #4a4a4a;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.bookingButton:disabled:hover {
+  background: #4a4a4a;
 } 

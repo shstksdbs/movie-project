@@ -51,14 +51,15 @@ export default function SearchModal({ onClose, top = 64, height = '80vh', open }
   // 인기 검색어 불러오기
   useEffect(() => {
     setLoading(true);
+    console.log('인기 검색어 조회 시작');
     axios.get('http://localhost:80/api/popular-keywords', { withCredentials: true })
       .then(res => {
         setPopularKeywords(res.data);
-        console.log('인기 검색어:', res.data);
+        console.log('인기 검색어 조회 성공:', res.data);
         setLoading(false);
       })
       .catch(err => {
-        console.error('인기 검색어 조회 실패:', err);
+        console.error('인기 검색어 조회 실패:', err.response?.data || err.message);
         setPopularKeywords([]);
         setLoading(false);
       });
@@ -66,15 +67,54 @@ export default function SearchModal({ onClose, top = 64, height = '80vh', open }
 
   const handleSearch = () => {
     if (search.trim()) {
-      // 검색어 저장
-      axios.post('http://localhost:80/api/search-history', null, {
-        params: { keyword: search, searchResultCount: 0 },
-        withCredentials: true
-      }).then(() => {
+      console.log('검색어 저장 시작:', search);
+      
+      // 먼저 검색 결과 개수를 확인
+      Promise.all([
+        fetch(`http://localhost:80/data/api/movie-detail-dto/search?keyword=${encodeURIComponent(search)}&page=0&size=20`),
+        fetch(`http://localhost:80/data/api/search-person?keyword=${encodeURIComponent(search)}`),
+        axios.get(`http://localhost:80/api/users/search?nickname=${encodeURIComponent(search)}`, {
+          withCredentials: true
+        })
+      ])
+      .then(responses => {
+        return Promise.all([
+          responses[0].json(),
+          responses[1].json(),
+          responses[2].data
+        ]);
+      })
+      .then(([movieData, personData, userData]) => {
+        // 검색 결과 개수 계산
+        const movieCount = (movieData.data || []).length;
+        const personCount = ((personData.actors || []).length + (personData.directors || []).length);
+        const userCount = userData.length;
+        const totalResultCount = movieCount + personCount + userCount;
+        
+        //console.log('검색 결과 개수:', { movieCount, personCount, userCount, totalResultCount });
+        
+        // 검색어 저장 (실제 결과 개수 전달)
+        return axios.post('http://localhost:80/api/search-history', null, {
+          params: { keyword: search, searchResultCount: totalResultCount },
+          withCredentials: true
+        });
+      })
+      .then((response) => {
         // 저장 후 최근 검색어 다시 불러오기
         return axios.get('http://localhost:80/api/search-history', { withCredentials: true });
-      }).then(res => setRecentSearches(res.data))
-        .catch(() => { });
+      }).then(res => {
+        console.log('최근 검색어 조회 성공:', res.data);
+        setRecentSearches(res.data);
+        // 인기 검색어도 다시 불러오기
+        return axios.get('http://localhost:80/api/popular-keywords', { withCredentials: true });
+      }).then(res => {
+        setPopularKeywords(res.data);
+        console.log('인기 검색어 업데이트:', res.data);
+      }).catch(err => {
+        console.error('검색어 저장 또는 조회 실패:', err.response?.data || err.message);
+        console.error('에러 상세:', err);
+      });
+      
       // 검색 결과 페이지로 이동
       navigate(`/search?query=${encodeURIComponent(search)}`);
     }
